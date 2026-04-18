@@ -9,6 +9,9 @@
     "pcie_aspm=off"
   ];
 
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
+  boot.kernelModules = [ "kvm-intel" ];
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -26,7 +29,7 @@
   users.users.tim = {
     isNormalUser = true;
     description = "tim";
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [ "wheel" "networkmanager" "audio" ];
     initialPassword = "changeme";
   };
 
@@ -35,9 +38,12 @@
   swapDevices = [
     {
       device = "/swap/swapfile";
-      size = 8192;
+      size = 16384;
     }
   ];
+
+  # Audio - PulseAudio (familiar from Linux Mint)
+  hardware.pulseaudio.enable = true;
 
   environment.systemPackages = with pkgs; [
     git
@@ -46,6 +52,10 @@
     wget
     firefox
   ];
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  networking.firewall.enable = true;
 
   system.stateVersion = "25.05";
 }
