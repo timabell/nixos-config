@@ -27,22 +27,29 @@ Connect an ethernet cable, or join wifi:
 nmcli device wifi connect "SSID" password "PASSWORD"
 ```
 
-### 3. Install with disko-install
+### 3. Clone this repo
 
-This partitions, formats, and installs NixOS in one step, pulling the flake
-directly from GitHub. Replace the URL with your repo and `/dev/nvme0n1` if
-your drive path differs:
+```sh
+nix-shell -p git --run \
+  'git clone https://github.com/timabell/nixos-config.git' \
+  && cd nixos-config
+```
+
+### 4. Install with disko-install
+
+This partitions, formats, and installs NixOS in one step. Replace
+`/dev/nvme0n1` if your drive path differs:
 
 ```sh
 sudo nix --experimental-features 'nix-command flakes' \
-  run --accept-flake-config 'github:nix-community/disko/latest#disko-install' -- \
-  --flake 'github:timabell/nixos-config#xps15' \
+  run 'github:nix-community/disko/latest#disko-install' -- \
+  --flake '.#xps15' \
   --disk main /dev/nvme0n1
 ```
 
 You will be prompted for a LUKS passphrase.
 
-### 4. Reboot
+### 5. Reboot
 
 ```sh
 reboot
