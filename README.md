@@ -105,3 +105,4 @@ set up shared folders.
 - [Home Manager](https://github.com/nix-community/home-manager) -- manage dotfiles and user-level packages declaratively (a natural next step)
 - [NVMe drive not detecting after calameres initiates - Help - NixOS Discourse](https://discourse.nixos.org/t/nvme-drive-not-detecting-after-calameres-initiates/32108/14)
 - [Cinnamon - Official NixOS Wiki](https://wiki.nixos.org/wiki/Cinnamon)
+- [Laptop setup notes](https://0x5.uk/2019/08/20/laptop-setup/)
