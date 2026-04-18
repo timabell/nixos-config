@@ -37,6 +37,9 @@ nix-shell -p git --run \
 
 ### 4. Install with disko-install
 
+**⚠️ WARNING: This will wipe the entire target disk. All existing data will be
+destroyed. Make sure you have backups and have specified the correct device.**
+
 This partitions, formats, and installs NixOS in one step. Replace
 `/dev/nvme0n1` if your drive path differs:
 
