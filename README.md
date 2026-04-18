@@ -41,7 +41,7 @@ This partitions, formats, and installs NixOS in one step. Replace
 `/dev/nvme0n1` if your drive path differs:
 
 ```sh
-sudo nix --experimental-features 'nix-command flakes' \
+sudo nix --extra-experimental-features 'nix-command flakes' \
   run 'github:nix-community/disko/latest#disko-install' -- \
   --flake '.#xps15' \
   --disk main /dev/nvme0n1
