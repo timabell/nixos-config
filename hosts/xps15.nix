@@ -23,9 +23,9 @@
   time.timeZone = "Europe/London";
   i18n.defaultLocale = "en_GB.UTF-8";
 
-  users.users.me = {
+  users.users.tim = {
     isNormalUser = true;
-    description = "me";
+    description = "tim";
     extraGroups = [ "wheel" "networkmanager" ];
     initialPassword = "changeme";
   };
