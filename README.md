@@ -7,7 +7,7 @@ LUKS encryption, and btrfs.
 
 ## Installing from live USB
 
-### 1. Boot the NixOS live USB
+### Boot the NixOS live USB
 
 The XPS 15 NVMe drive is not visible to the default NixOS live environment.
 At the GRUB boot menu, press `e` to edit the boot entry and add these kernel
@@ -19,7 +19,7 @@ nvme_core.default_ps_max_latency_us=0 pcie_aspm=off
 
 Without these, the installer will not see `/dev/nvme0n1`.
 
-### 2. Connect to the network
+### Connect to the network
 
 Connect an ethernet cable, or join wifi:
 
@@ -27,7 +27,7 @@ Connect an ethernet cable, or join wifi:
 nmcli device wifi connect "SSID" password "PASSWORD"
 ```
 
-### 3. Clone this repo
+### Clone this repo
 
 ```sh
 nix-shell -p git --run \
@@ -35,7 +35,7 @@ nix-shell -p git --run \
   && cd nixos-config
 ```
 
-### 4. Install with disko-install
+### Install with disko-install
 
 **⚠️ WARNING: This will wipe the entire target disk. All existing data will be
 destroyed. Make sure you have backups and have specified the correct device.**
@@ -52,7 +52,7 @@ sudo nix --extra-experimental-features 'nix-command flakes' \
 
 You will be prompted for a LUKS passphrase.
 
-### 5. Reboot
+### Reboot
 
 ```sh
 reboot
@@ -63,6 +63,30 @@ Log in as `tim` with the initial password `changeme` and change it immediately:
 ```sh
 passwd
 ```
+
+### Generate SSH key and add to GitHub
+
+```sh
+ssh-keygen
+cat ~/.ssh/id_ed25519.pub
+```
+
+Add the public key at https://github.com/settings/keys
+
+### Clone this repo (first time only)
+
+Once syncthing is configured, future rebuilds will already have the repo
+via syncthing sync.
+
+```sh
+git clone git@github.com:timabell/nixos-config.git
+```
+
+### Configure syncthing
+
+Syncthing is enabled in the NixOS config and starts automatically. Open
+http://localhost:8384 in a browser to pair with your other machines and
+set up shared folders.
 
 ## Useful references
 

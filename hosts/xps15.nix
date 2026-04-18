@@ -52,6 +52,12 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  services.syncthing = {
+    enable = true;
+    user = "tim";
+    dataDir = "/home/tim";
+  };
+
   networking.firewall.enable = true;
 
   system.stateVersion = "25.05";
