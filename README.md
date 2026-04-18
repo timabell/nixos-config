@@ -35,7 +35,7 @@ your drive path differs:
 
 ```sh
 sudo nix --experimental-features 'nix-command flakes' \
-  run 'github:nix-community/disko/latest#disko-install' -- \
+  run --accept-flake-config 'github:nix-community/disko/latest#disko-install' -- \
   --flake 'github:timabell/nixos-config#xps15' \
   --disk main /dev/nvme0n1
 ```
