@@ -42,9 +42,6 @@
     }
   ];
 
-  # Audio - PulseAudio (familiar from Linux Mint)
-  hardware.pulseaudio.enable = true;
-
   environment.systemPackages = with pkgs; [
     git
     vim
