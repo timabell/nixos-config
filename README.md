@@ -34,7 +34,8 @@ directly from GitHub. Replace the URL with your repo and `/dev/nvme0n1` if
 your drive path differs:
 
 ```sh
-sudo nix run 'github:nix-community/disko/latest#disko-install' -- \
+sudo nix --experimental-features 'nix-command flakes' \
+  run 'github:nix-community/disko/latest#disko-install' -- \
   --flake 'github:timabell/nixos-config#xps15' \
   --disk main /dev/nvme0n1
 ```
