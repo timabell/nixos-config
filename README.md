@@ -83,7 +83,8 @@ Once syncthing is configured, future rebuilds will already have the repo
 via syncthing sync.
 
 ```sh
-git clone git@github.com:timabell/nixos-config.git
+mkdir -p ~/repo
+git clone git@github.com:timabell/nixos-config.git ~/repo/nixos-config
 ```
 
 ### Configure syncthing
@@ -91,6 +92,22 @@ git clone git@github.com:timabell/nixos-config.git
 Syncthing is enabled in the NixOS config and starts automatically. Open
 http://localhost:8384 in a browser to pair with your other machines and
 set up shared folders.
+
+## Making changes
+
+Edit the nix files then rebuild and switch:
+
+```sh
+cd ~/repo/nixos-config
+sudo nixos-rebuild switch --flake .#xps15
+```
+
+This doesn't reboot. It restarts/reloads only the services that changed
+(e.g. adding syncthing starts the syncthing service). Kernel or bootloader
+changes update the boot entry but only take effect on the next reboot.
+
+If something breaks, reboot and pick a previous generation from the
+systemd-boot menu.
 
 ## Useful references
 
