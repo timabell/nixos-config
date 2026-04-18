@@ -64,6 +64,10 @@ Log in as `tim` with the initial password `changeme` and change it immediately:
 passwd
 ```
 
+### Sign in to Firefox
+
+Sign in to Firefox Sync to restore bookmarks, passwords, and extensions.
+
 ### Generate SSH key and add to GitHub
 
 ```sh
