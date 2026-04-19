@@ -10,7 +10,7 @@
     tig
     gitui
     gh
-    git-delta
+    delta
 
     # editors
     vim
