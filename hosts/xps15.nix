@@ -15,13 +15,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Cinnamon, Mint-style
-  services.xserver.enable = true;
-  services.xserver.displayManager.lightdm.enable = true;
-  services.xserver.desktopManager.cinnamon.enable = true;
-
-  # optional but practical
-  services.displayManager.defaultSession = "cinnamon";
+  # wifi (Killer 1535 / ath10k)
+  hardware.firmware = [ pkgs.linux-firmware ];
 
   time.timeZone = "Europe/London";
   i18n.defaultLocale = "en_GB.UTF-8";
@@ -29,11 +24,10 @@
   users.users.tim = {
     isNormalUser = true;
     description = "tim";
-    extraGroups = [ "wheel" "networkmanager" "audio" ];
+    extraGroups = [ "wheel" "networkmanager" "audio" "docker" ];
+    shell = pkgs.zsh;
     initialPassword = "changeme";
   };
-
-  networking.networkmanager.enable = true;
 
   swapDevices = [
     {
@@ -42,23 +36,7 @@
     }
   ];
 
-  environment.systemPackages = with pkgs; [
-    git
-    vim
-    curl
-    wget
-    firefox
-  ];
-
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  services.syncthing = {
-    enable = true;
-    user = "tim";
-    dataDir = "/home/tim";
-  };
-
-  networking.firewall.enable = true;
 
   system.stateVersion = "25.05";
 }
