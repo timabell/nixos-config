@@ -6,9 +6,7 @@
 
   environment.systemPackages = with pkgs; [
     # version control
-    git
-    gitk
-    git-gui
+    gitFull # includes gitk and git-gui
     tig
     gitui
     gh

@@ -16,7 +16,7 @@
       enable = true;
       plugins = [ "alias-finder" "fzf" "git" "mise" ];
     };
-    initExtra = ''
+    initContent = ''
       # disable magic functions (pasting URLs)
       DISABLE_MAGIC_FUNCTIONS="true"
 
@@ -47,10 +47,10 @@
 
       export DISABLE_AUTOUPDATER=1 # turn off claude code's broken updater
     '';
-    envExtra = ''
+    envContent = ''
       export PATH=$HOME/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:$HOME/.dotnet/tools:$PATH
     '';
-    profileExtra = ''
+    profileContent = ''
       # If this shell is reached via SSH/Mosh, use a separate agent (no desktop GUI prompts)
       if [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_CLIENT" ] || [ -n "$MOSH_CONNECTION" ]; then
         export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent-remote.sock"
