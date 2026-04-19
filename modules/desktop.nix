@@ -19,7 +19,6 @@
   # fonts
   fonts.packages = with pkgs; [
     jetbrains-mono
-    ubuntu-font-family
   ];
 
   # sound (pipewire is the NixOS 25.05 default)
