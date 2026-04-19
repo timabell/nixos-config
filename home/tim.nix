@@ -47,10 +47,10 @@
 
       export DISABLE_AUTOUPDATER=1 # turn off claude code's broken updater
     '';
-    envContent = ''
+    envExtra = ''
       export PATH=$HOME/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:$HOME/.dotnet/tools:$PATH
     '';
-    profileContent = ''
+    profileExtra = ''
       # If this shell is reached via SSH/Mosh, use a separate agent (no desktop GUI prompts)
       if [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_CLIENT" ] || [ -n "$MOSH_CONNECTION" ]; then
         export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent-remote.sock"
