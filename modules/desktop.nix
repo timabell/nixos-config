@@ -36,7 +36,7 @@
     firefox
     keepassxc
     libreoffice
-    okular
+    kdePackages.okular
     pdfarranger
     gimp
     dia
