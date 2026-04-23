@@ -23,6 +23,7 @@
   boot.kernel.sysctl = {
     "fs.inotify.max_user_instances" = 524288;
     "fs.inotify.max_user_watches" = 524288;
+    "kernel.io_uring_disabled" = 1;
   };
 
   # gpg agent with pinentry for ssh sessions
