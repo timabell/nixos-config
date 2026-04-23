@@ -87,6 +87,23 @@ mkdir -p ~/repo
 git clone git@github.com:timabell/nixos-config.git ~/repo/nixos-config
 ```
 
+### Tailscale login/add
+
+If rebuilding a machine remove the old host from [tailscale machine list](https://login.tailscale.com/admin/machines) first (to avoid a machine-1 hostname).
+
+```sh
+sudo tailscale up --operator=$USER
+```
+
+(`--operator` to avoid future need for `sudo`)
+
+### ssh auth
+
+```sh
+ssh-copy-id othermachine
+ssh othermachine
+```
+
 ### Configure syncthing
 
 Syncthing is enabled in the NixOS config and starts automatically. Open
