@@ -1,9 +1,9 @@
 { pkgs, ... }:
 
 {
-  networking.hostName = "xps15";
+  networking.hostName = "x15";
 
-  # live usb nixos on xps failed to find nvme without this:
+  # live usb nixos failed to find nvme without this:
   boot.kernelParams = [
     "nvme_core.default_ps_max_latency_us=0"
     "pcie_aspm=off"

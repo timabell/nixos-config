@@ -11,12 +11,12 @@
   };
 
   outputs = { self, nixpkgs, disko, nixos-hardware, home-manager, ... }: {
-    nixosConfigurations.xps15 = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.x15 = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         disko.nixosModules.disko
-        ./disko/xps15.nix
-        ./hosts/xps15.nix
+        ./disko/x15.nix
+        ./hosts/x15.nix
         ./modules/desktop.nix
         ./modules/development.nix
         ./modules/networking.nix
