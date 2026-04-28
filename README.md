@@ -5,6 +5,8 @@ https://github.com/timabell/nixos-config
 Flake-based NixOS configuration with disko for declarative disk partitioning,
 LUKS encryption, and btrfs.
 
+Also available as a variation for an [isolated development vm](dev-vm.md) to mitigate supply-chain attacks on the primary host.
+
 ## Installing from live USB
 
 ### Boot the NixOS live USB

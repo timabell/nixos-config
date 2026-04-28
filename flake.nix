@@ -8,27 +8,60 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-generators.url = "github:nix-community/nixos-generators";
+    nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, disko, nixos-hardware, home-manager, ... }: {
-    nixosConfigurations.x15 = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        disko.nixosModules.disko
-        ./disko/x15.nix
-        ./hosts/x15.nix
-        ./modules/desktop.nix
+  outputs = { self, nixpkgs, disko, nixos-hardware, home-manager, nixos-generators, ... }:
+    let
+      devvmModules = [
+        ./hosts/devvm.nix
         ./modules/development.nix
-        ./modules/networking.nix
-        ./modules/hardware.nix
-        nixos-hardware.nixosModules.dell-xps-15-9530
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.tim = import ./home/tim.nix;
+          home-manager.users.tim = { lib, ... }: {
+            imports = [ ./home/tim.nix ];
+            # No GPG keys in the VM — keys live on the host.
+            programs.git.extraConfig.commit.gpgsign = lib.mkForce false;
+          };
         }
       ];
+    in {
+      nixosConfigurations.x15 = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          disko.nixosModules.disko
+          ./disko/x15.nix
+          ./hosts/x15.nix
+          ./modules/desktop.nix
+          ./modules/development.nix
+          ./modules/networking.nix
+          ./modules/hardware.nix
+          nixos-hardware.nixosModules.dell-xps-15-9530
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.tim = import ./home/tim.nix;
+          }
+        ];
+      };
+
+      # In-place rebuild target inside the VM:
+      #   sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm
+      nixosConfigurations.devvm = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = devvmModules;
+      };
+
+      # Image build (run on host):
+      #   nix build .#devvm
+      packages.x86_64-linux.devvm = nixos-generators.nixosGenerate {
+        system = "x86_64-linux";
+        format = "qcow";
+        modules = devvmModules;
+      };
     };
-  };
 }
