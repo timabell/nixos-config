@@ -15,8 +15,16 @@ See also the more granular [bubblewrap sandbox](https://github.com/timabell/sand
 
 ## Build the qcow2
 
-The flake build *is* the installer. Output is a fully-installed disk image —
-no live USB, no `nixos-install` step.
+The flake build *is* the installer — no live USB, no `nixos-install`. The
+flow is two-stage:
+
+1. Build a **bare** NixOS qcow2 (`.#devvm-base`) — small closure, fast.
+2. Boot it, then `nixos-rebuild switch` to the **full** config inside the
+   running VM — pulls store paths from `cache.nixos.org` instead of
+   running the slow `cptofs` step a second time.
+
+This avoids the ~hour of single-threaded ext4 packing that a full image
+build would take.
 
 ### 1. Install Nix
 
@@ -57,32 +65,46 @@ git clone https://github.com/timabell/nixos-config.git
 cd nixos-config
 ```
 
-### 3. Build the image
+### 3. Build the bare image
 
 ```
-nix build .#devvm
+nix build .#devvm-base
 ```
 
-First build pulls a lot — expect 15–30 minutes and several GB of nixpkgs
-downloads. Subsequent rebuilds are fast.
+This builds a minimal bootable NixOS image. Small closure → `cptofs`
+finishes in minutes, not hours. The full devvm config is layered on top
+*inside* the running VM (step 7), where store paths are fetched from
+`cache.nixos.org` over the network instead of being packed via the
+single-threaded `cptofs` step in the image build.
 
-The result is at `result/devvm.qcow2` (a symlink into the Nix store).
+Result: `result/devvm-base.qcow2` (symlink into the Nix store).
 
 ### 4. Place the qcow2 where libvirt can read it
 
 ```
 sudo install -o libvirt-qemu -g libvirt-qemu -m 0660 \
-  result/devvm.qcow2 /var/lib/libvirt/images/devvm.qcow2
+  result/devvm-base.qcow2 /var/lib/libvirt/images/devvm.qcow2
 ```
 
 On Debian/Ubuntu the libvirt user/group is `libvirt-qemu`; on Fedora/Arch
 it's `qemu`. Adjust if `id libvirt-qemu` says no such user.
 
-The image ships with an 80 GiB cap (set via `virtualisation.diskSize` in
-`hosts/devvm.nix`). qcow2 is sparse, so actual host disk use only grows
-as the guest writes — the 80 GiB is a ceiling, not an upfront allocation.
+### 5. Resize the qcow2 to 80 GiB before first boot
 
-## Create the VM in virt-manager
+The bare image is built tiny (~4 GiB) because `cptofs`/LKL OOMs trying to
+handle ext4 metadata for a large filesystem at build time. Resize it on
+the host now — qcow2 is sparse, so the 80 GiB is a cap, not an upfront
+allocation:
+
+```
+sudo qemu-img resize /var/lib/libvirt/images/devvm.qcow2 80G
+```
+
+`growPartition` + `autoResize` (from the imported `disk-image.nix`)
+expand the partition and root filesystem to fill the new disk on first
+boot.
+
+### 6. Create the VM in virt-manager
 
 1. **File → New Virtual Machine → Import existing disk image**
 2. Provide path: `/var/lib/libvirt/images/devvm.qcow2`. OS type: Linux,
@@ -118,21 +140,51 @@ In the customization screen:
 Click **Begin Installation**. (It's not really installing — it just boots
 the pre-built image.)
 
-## First boot
+### 7. First boot of the bare image
 
-- Log in as `tim` / `changeme` at the LightDM greeter.
-- `passwd` immediately to change it.
-- The shared folder mounts at `/home/tim/work`. Confirm with `mount | grep virtiofs`.
-- Network should come up via NetworkManager (the XFCE applet is in the tray).
+You'll land in a TTY logged in as `tim` (autologin is enabled in the bare
+image). Run `passwd` to change the default password (`changeme`).
 
-GPG: there are deliberately no keys. `git commit` works without `-S`. If you
-hit a remote that enforces signing, do the final commit/push from the host.
+Networking comes up via DHCP. Confirm:
+
+```
+ping -c1 cache.nixos.org
+```
+
+### 8. Switch to the full devvm config
+
+From inside the running bare VM, apply the full config (XFCE, IDEs,
+virtiofs mount, etc.):
+
+```
+sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm
+```
+
+This downloads pre-built store paths from `cache.nixos.org` rather than
+running `cptofs` — much faster than rebuilding the qcow2 from scratch.
+First switch is the bulk of the work; subsequent switches are quick.
+
+Reboot to land in the XFCE greeter:
+
+```
+sudo reboot
+```
+
+After reboot:
+
+- Log in as `tim` at the LightDM greeter.
+- The virtiofs share mounts at `/home/tim/work`. Confirm with
+  `mount | grep virtiofs`.
+- Network should come up via NetworkManager (the XFCE applet is in the
+  tray).
+
+GPG: there are deliberately no keys. `git commit` works without `-S`. If
+you hit a remote that enforces signing, do the final commit/push from the
+host.
 
 ## Updating the VM later
 
-Rebuild in place from inside the VM — the flake exposes
-`nixosConfigurations.devvm` for exactly this. Pull the latest config
-straight from GitHub:
+Rebuild in place from inside the VM — the same command you used in step 8:
 
 ```
 sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm
@@ -145,9 +197,17 @@ cd /home/tim/work/nixos-config
 sudo nixos-rebuild switch --flake .#devvm
 ```
 
-This applies config changes to the running VM the same way `nixos-rebuild
-switch` works on a normal NixOS host. No need to rebuild and re-import the
-qcow2 unless you're recovering from breakage or want a fresh disk.
+This is the workflow for almost everything. No need to rebuild and
+re-import the qcow2 unless you're recovering from breakage or want a
+fresh disk.
+
+### Building a full qcow2 from scratch (rarely needed)
+
+`nix build .#devvm` builds the full config as a fresh qcow2 — everything
+the in-place switch would install, packed via `cptofs`. This is **slow**
+(60+ minutes of single-threaded ext4 packing) and only worth it if you
+specifically want a clean-state disk image (e.g. handing one to someone
+else, or reproducing the VM from zero).
 
 ## Expanding the disk later
 
@@ -161,11 +221,12 @@ rebuild needed) — qcow2 is sparse so this is cheap:
    sudo qemu-img resize /var/lib/libvirt/images/devvm.qcow2 200G
    ```
 
-3. Boot the VM. `autoResize` + `growPartition` (set in `hosts/devvm.nix`)
-   expand the partition and root filesystem to fill the new space.
+3. Boot the VM. `autoResize` + `growPartition` (provided by the imported
+   `disk-image.nix` module) expand the partition and root filesystem to
+   fill the new space.
 
 You can also bake a new default into the build by editing
-`virtualisation.diskSize` in `hosts/devvm.nix` — only matters for fresh
+`virtualisation.diskSize` in `hosts/devvm-base.nix` — only matters for fresh
 qcow2 builds, doesn't affect an already-deployed VM.
 
 ## Troubleshooting

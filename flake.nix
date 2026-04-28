@@ -47,17 +47,26 @@
         ];
       };
 
-      # In-place rebuild target inside the VM:
+      # Bare-bones bootable image. Build this first — small closure, fast
+      # cptofs. Boot it, then in-place switch to the full devvm config.
+      nixosConfigurations.devvm-base = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [ ./hosts/devvm-base.nix ];
+      };
+
+      # Full devvm config. Used in-place inside the running base VM:
       #   sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm
+      # Building it as a fresh qcow2 is also possible (.#devvm) but slow.
       nixosConfigurations.devvm = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = devvmModules;
       };
 
-      # Image build (run on host):
-      #   nix build .#devvm
-      # Produces result/devvm.qcow2 via the upstream image builder
-      # (nixpkgs ≥ 25.05; replaces nixos-generators).
+      # `nix build .#devvm-base` → result/devvm-base.qcow2 (the fast path)
+      packages.x86_64-linux.devvm-base =
+        self.nixosConfigurations.devvm-base.config.system.build.image;
+
+      # `nix build .#devvm` → result/devvm.qcow2 (slow; only for fresh disks)
       packages.x86_64-linux.devvm =
         self.nixosConfigurations.devvm.config.system.build.image;
     };

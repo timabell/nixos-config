@@ -1,49 +1,30 @@
-{ pkgs, lib, modulesPath, ... }:
+{ pkgs, lib, ... }:
+
+# Full devvm config — XFCE + IDEs + virtiofs share. Layered on top of
+# devvm-base. Applied via `nixos-rebuild switch --flake .#devvm` from
+# inside a running devvm-base VM (fast: fetches from cache.nixos.org)
+# rather than via a fresh image build (slow: cptofs).
 
 {
   imports = [
-    "${toString modulesPath}/profiles/qemu-guest.nix"
-    # Upstream qcow2 image builder (nixpkgs ≥ 25.05). Provides
-    # `system.build.image`, sets fileSystems."/", boot.growPartition, and
-    # bootloader (systemd-boot for UEFI by default). Imported into the base
-    # config so `nixos-rebuild switch --flake .#devvm` works in-place too.
-    "${toString modulesPath}/virtualisation/disk-image.nix"
+    ./devvm-base.nix
   ];
 
-  boot.loader.timeout = 0;
+  # Override the image baseName for full-image rebuilds (rare path).
+  image.baseName = lib.mkForce "devvm";
 
-  # 80 GiB cap on the qcow2. Sparse: actual host disk usage grows as the
-  # guest writes, so this is a cap, not an up-front cost.
-  virtualisation.diskSize = 80 * 1024;
-
-  # Friendly result file name: result/devvm.qcow2
-  image.baseName = "devvm";
-
-  networking.hostName = "devvm";
-
-  time.timeZone = "Europe/London";
-  i18n.defaultLocale = "en_GB.UTF-8";
-
-  users.users.tim = {
-    isNormalUser = true;
-    description = "tim";
-    extraGroups = [ "wheel" "networkmanager" "audio" "video" "docker" ];
-    shell = pkgs.zsh;
-    initialPassword = "changeme";
-  };
+  users.users.tim.shell = pkgs.zsh;
+  users.users.tim.extraGroups = [ "networkmanager" "audio" "video" "docker" ];
 
   # XFCE desktop (lightweight alternative to Cinnamon)
   services.xserver.enable = true;
   services.xserver.displayManager.lightdm.enable = true;
   services.xserver.desktopManager.xfce.enable = true;
   services.displayManager.defaultSession = "xfce";
-
   services.xserver.xkb.layout = "gb";
-  console.keyMap = "uk";
 
   # SPICE: bidirectional clipboard + display auto-resize
   services.spice-vdagentd.enable = true;
-  services.qemuGuest.enable = true;
 
   # sound
   services.pipewire = {
@@ -54,8 +35,9 @@
 
   programs.zsh.enable = true;
 
-  # network: NetworkManager for the GUI applet, firewall on (outbound-only by default)
+  # NetworkManager replaces the base's plain DHCP for desktop UX.
   networking.networkmanager.enable = true;
+  networking.useDHCP = lib.mkForce false;
   networking.firewall.enable = true;
 
   # virtiofs shared folder from host. The libvirt domain must define a filesystem
@@ -77,8 +59,6 @@
       "vscode"
     ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
   environment.systemPackages = with pkgs; [
     # IDEs
     jetbrains-toolbox
@@ -91,6 +71,4 @@
     xclip
     pavucontrol
   ];
-
-  system.stateVersion = "25.05";
 }
