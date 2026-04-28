@@ -50,6 +50,15 @@
     SUBSYSTEM=="drm", ATTRS{vendor}=="0x1b36", ATTRS{device}=="0x0100", SYMLINK+="dri/card0"
   '';
 
+  # Auto-mount the virtiofs share that dev-vm-install.sh attaches.
+  # Tag "work" matches SHARE_TAG in the host script. nofail keeps the VM
+  # bootable if a future variant runs without the share attached.
+  fileSystems."/home/tim/work" = {
+    device = "work";
+    fsType = "virtiofs";
+    options = [ "nofail" ];
+  };
+
   # sound
   services.pipewire = {
     enable = true;
