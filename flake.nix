@@ -8,11 +8,9 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-generators.url = "github:nix-community/nixos-generators";
-    nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, disko, nixos-hardware, home-manager, nixos-generators, ... }:
+  outputs = { self, nixpkgs, disko, nixos-hardware, home-manager, ... }:
     let
       devvmModules = [
         ./hosts/devvm.nix
@@ -58,10 +56,9 @@
 
       # Image build (run on host):
       #   nix build .#devvm
-      packages.x86_64-linux.devvm = nixos-generators.nixosGenerate {
-        system = "x86_64-linux";
-        format = "qcow";
-        modules = devvmModules;
-      };
+      # Produces result/devvm.qcow2 via the upstream image builder
+      # (nixpkgs ≥ 25.05; replaces nixos-generators).
+      packages.x86_64-linux.devvm =
+        self.nixosConfigurations.devvm.config.system.build.image;
     };
 }

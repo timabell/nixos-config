@@ -66,13 +66,13 @@ nix build .#devvm
 First build pulls a lot — expect 15–30 minutes and several GB of nixpkgs
 downloads. Subsequent rebuilds are fast.
 
-The result is at `result/nixos.qcow2` (a symlink into the Nix store).
+The result is at `result/devvm.qcow2` (a symlink into the Nix store).
 
 ### 4. Place the qcow2 where libvirt can read it
 
 ```
 sudo install -o libvirt-qemu -g libvirt-qemu -m 0660 \
-  result/nixos.qcow2 /var/lib/libvirt/images/devvm.qcow2
+  result/devvm.qcow2 /var/lib/libvirt/images/devvm.qcow2
 ```
 
 On Debian/Ubuntu the libvirt user/group is `libvirt-qemu`; on Fedora/Arch
@@ -92,6 +92,10 @@ as the guest writes — the 80 GiB is a ceiling, not an upfront allocation.
 
 In the customization screen:
 
+- **Overview → Firmware** — set to **UEFI** (OVMF). The image is built
+  with systemd-boot + an ESP partition, so it will not boot under BIOS
+  firmware. If "UEFI" isn't offered, install `edk2-ovmf` (or your distro's
+  equivalent OVMF package) on the host and restart libvirtd.
 - **Display Spice** — keep, set Listen type to "None".
 - **Video** — set to virtio (or QXL as a fallback if virtio gives you trouble). Don't use Cirrus.
 - **Channels** — confirm `org.spice-space.webdav.0` and the qemu-ga channel
@@ -166,6 +170,9 @@ qcow2 builds, doesn't affect an already-deployed VM.
 
 ## Troubleshooting
 
+- **VM won't boot / GRUB or BIOS error** — firmware must be UEFI (OVMF),
+  not BIOS. Edit the VM XML and confirm `<os firmware="efi">` (or set it
+  via virt-manager → Overview → Firmware → UEFI).
 - **virtiofs mount fails on boot** — the VM is configured with `nofail`, so
   it boots anyway. Check `journalctl -u home-tim-work.mount` and confirm
   the libvirt domain has shared memory enabled and the filesystem target is

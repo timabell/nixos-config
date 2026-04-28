@@ -3,24 +3,21 @@
 {
   imports = [
     "${toString modulesPath}/profiles/qemu-guest.nix"
+    # Upstream qcow2 image builder (nixpkgs ≥ 25.05). Provides
+    # `system.build.image`, sets fileSystems."/", boot.growPartition, and
+    # bootloader (systemd-boot for UEFI by default). Imported into the base
+    # config so `nixos-rebuild switch --flake .#devvm` works in-place too.
+    "${toString modulesPath}/virtualisation/disk-image.nix"
   ];
 
-  # Boot/fs config matching the qcow image produced by nixos-generators
-  # (single ext4 root labeled "nixos", grub on /dev/vda). Declared here so
-  # that `nixos-rebuild switch --flake .#devvm` works in-place inside the
-  # running VM, not only during image build.
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
-    autoResize = true;
-    fsType = "ext4";
-  };
-  boot.growPartition = true;
-  boot.loader.grub.device = "/dev/vda";
   boot.loader.timeout = 0;
 
   # 80 GiB cap on the qcow2. Sparse: actual host disk usage grows as the
   # guest writes, so this is a cap, not an up-front cost.
   virtualisation.diskSize = 80 * 1024;
+
+  # Friendly result file name: result/devvm.qcow2
+  image.baseName = "devvm";
 
   networking.hostName = "devvm";
 
