@@ -61,9 +61,11 @@
 
   # 8 GiB swapfile. The qcow2 ships swapless; npm installs of big
   # dep trees can blow past 16 GiB RAM and trigger OOM-kills, taking
-  # the X session with them.
+  # the X session with them. Place at root since /swap doesn't exist
+  # on the image's flat ext4 layout (unlike x15 which has a btrfs
+  # subvolume).
   swapDevices = [{
-    device = "/swap/swapfile";
+    device = "/swapfile";
     size = 8192;
   }];
 
