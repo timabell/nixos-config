@@ -9,7 +9,7 @@ See also the more granular [bubblewrap sandbox](https://github.com/timabell/sand
 - XFCE desktop (lightweight)
 - JetBrains Toolbox, VS Code, the dev tools from `modules/development.nix`
 - SPICE: bidirectional clipboard, display auto-resize
-- Virtiofs: one shared folder from host → `/home/tim/work` in VM
+- Optional: virtiofs share from host (mounted ad-hoc inside the VM, not baked into the config)
 - No GPG keys in the VM. Signing is host-only.
 - Outbound-only firewall
 
@@ -122,23 +122,12 @@ In the customization screen:
 - **Video** — set to virtio (or QXL as a fallback if virtio gives you trouble). Don't use Cirrus.
 - **Channels** — confirm `org.spice-space.webdav.0` and the qemu-ga channel
   are present (they auto-add for Linux guests).
-- **Memory** → tick **Enable shared memory** (required for virtiofs).
-  Equivalent XML:
-
-  ```xml
-  <memoryBacking>
-    <source type="memfd"/>
-    <access mode="shared"/>
-  </memoryBacking>
-  ```
-
-- **Add Hardware → Filesystem**:
-  - Driver: **virtiofs**
-  - Source path: e.g. `/home/<you>/devvm-share` (create this dir first)
-  - Target path: `shared` ← must match the tag in `hosts/devvm.nix`
-
 Click **Begin Installation**. (It's not really installing — it just boots
 the pre-built image.)
+
+If you want a virtiofs shared folder from the host, see "Adding a
+virtiofs share" below — it's intentionally not part of the baseline VM
+setup.
 
 ### 7. First boot of the bare image
 
@@ -154,7 +143,7 @@ ping -c1 cache.nixos.org
 ### 8. Switch to the full devvm config
 
 From inside the running bare VM, apply the full config (XFCE, IDEs,
-virtiofs mount, etc.):
+etc.):
 
 ```
 sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm
@@ -173,8 +162,6 @@ sudo reboot
 After reboot:
 
 - Log in as `tim` at the LightDM greeter.
-- The virtiofs share mounts at `/home/tim/work`. Confirm with
-  `mount | grep virtiofs`.
 - Network should come up via NetworkManager (the XFCE applet is in the
   tray).
 
@@ -190,10 +177,10 @@ Rebuild in place from inside the VM — the same command you used in step 8:
 sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm
 ```
 
-Or, if you have the repo cloned (e.g. on the shared folder):
+Or, if you have the repo cloned inside the VM:
 
 ```
-cd /home/tim/work/nixos-config
+cd ~/nixos-config
 sudo nixos-rebuild switch --flake .#devvm
 ```
 
@@ -229,17 +216,42 @@ You can also bake a new default into the build by editing
 `virtualisation.diskSize` in `hosts/devvm-base.nix` — only matters for fresh
 qcow2 builds, doesn't affect an already-deployed VM.
 
+## Adding a virtiofs share
+
+Deliberately not in the baseline VM config — keeps host-specific
+decisions out of the system config. To enable on a per-VM basis:
+
+1. **Install `virtiofsd` on the host** (Debian/Ubuntu: `apt install
+   virtiofsd`; Fedora: `dnf install virtiofsd`; Arch: `pacman -S
+   virtiofsd`). libvirt rejects the older qemu-bundled virtiofsd.
+
+2. **Recreate the VM with shared memory + filesystem.** In
+   `dev-vm-install.sh`, set `SHARE_DIR` and uncomment the two flags
+   marked "virtiofs". `virsh undefine devvm --nvram` first if the
+   domain already exists, then re-run the script.
+
+3. **Mount inside the VM** when you need it:
+
+   ```
+   sudo mkdir -p /home/tim/work
+   sudo mount -t virtiofs shared /home/tim/work
+   ```
+
+   Replace `shared` with whatever target tag you used on the host side.
+
+For something more persistent without involving NixOS, add a one-shot
+systemd unit inside the VM by hand. Don't add `fileSystems` entries to
+the flake — that re-couples this config to a host-side decision.
+
 ## Troubleshooting
 
 - **VM won't boot / GRUB or BIOS error** — firmware must be UEFI (OVMF),
   not BIOS. Edit the VM XML and confirm `<os firmware="efi">` (or set it
   via virt-manager → Overview → Firmware → UEFI).
-- **virtiofs mount fails on boot** — the VM is configured with `nofail`, so
-  it boots anyway. Check `journalctl -u home-tim-work.mount` and confirm
-  the libvirt domain has shared memory enabled and the filesystem target is
-  exactly `shared`.
 - **No clipboard sharing** — confirm Display is Spice (not VNC) and that
   `spice-vdagentd` is running inside the VM (`systemctl status spice-vdagentd`).
 - **Tiny screen / no auto-resize** — Video must be virtio (or QXL), not Cirrus.
+- **virtiofs mount fails: "wrong fs type"** — `virtiofsd` isn't running
+  on the host. Install it (see "Adding a virtiofs share").
 - **"command not found: nix-build"** after install — open a new shell so
   `/etc/profile.d/nix.sh` is sourced.

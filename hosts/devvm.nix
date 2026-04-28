@@ -1,9 +1,14 @@
 { pkgs, lib, ... }:
 
-# Full devvm config — XFCE + IDEs + virtiofs share. Layered on top of
-# devvm-base. Applied via `nixos-rebuild switch --flake .#devvm` from
-# inside a running devvm-base VM (fast: fetches from cache.nixos.org)
-# rather than via a fresh image build (slow: cptofs).
+# Full devvm config — XFCE + IDEs. Layered on top of devvm-base. Applied
+# via `nixos-rebuild switch --flake .#devvm` from inside a running
+# devvm-base VM (fast: fetches from cache.nixos.org) rather than via a
+# fresh image build (slow: cptofs).
+#
+# Host-side concerns (e.g. virtiofs shared folders) are deliberately left
+# out — mount them ad-hoc inside the VM with `sudo mount -t virtiofs
+# <tag> <mountpoint>` when you want one. Keeps this config portable
+# across "with/without share" and different share tags.
 
 {
   imports = [
@@ -39,15 +44,6 @@
   networking.networkmanager.enable = true;
   networking.useDHCP = lib.mkForce false;
   networking.firewall.enable = true;
-
-  # virtiofs shared folder from host. The libvirt domain must define a filesystem
-  # with target tag "shared" pointing at the host directory you want exposed.
-  # nofail keeps the VM bootable even when the share isn't attached.
-  fileSystems."/home/tim/work" = {
-    device = "shared";
-    fsType = "virtiofs";
-    options = [ "nofail" ];
-  };
 
   # fonts
   fonts.packages = with pkgs; [ jetbrains-mono ];
