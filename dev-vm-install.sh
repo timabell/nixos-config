@@ -30,7 +30,7 @@ virt-install \
   --vcpus "$VCPUS" \
   --cpu host-passthrough \
   --boot firmware=efi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=no,firmware.feature1.name=enrolled-keys,firmware.feature1.enabled=no \
-  --disk "path=$DISK,bus=virtio,cache=writeback,io=native,discard=unmap,queues=$VCPUS" \
+  --disk "path=$DISK,bus=virtio,cache=writeback,discard=unmap" \
   --osinfo linux2022 \
   --network network=default,model=virtio \
   --graphics spice,listen=none \
@@ -45,9 +45,12 @@ virt-install \
   #
   # Disk tuning (npm-install scale write storms otherwise crawl):
   #   cache=writeback  - use host page cache. Big speedup; tiny crash risk.
-  #   io=native        - Linux AIO instead of threadpool. Lower latency.
   #   discard=unmap    - trim/discard, keeps the qcow2 sparse over time.
-  #   queues=$VCPUS    - multi-queue virtio-blk; parallelises IO per vCPU.
+  # io=native would also help but libvirt requires cache=none|directsync
+  # for it; the writeback host-cache speedup is the bigger win.
+  # Multi-queue virtio-blk (queues=$VCPUS) too, but virt-install on older
+  # versions doesn't accept it. Add post-create via virt-xml if you want:
+  #   virt-xml devvm --edit target=vda --disk queues=$VCPUS
   #
   # virtiofs needs `virtiofsd` installed on the host and shared memory
   # backing (--memorybacking above). Near-native perf, handles big trees
