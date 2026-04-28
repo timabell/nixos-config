@@ -36,14 +36,17 @@ virt-install \
   --network network=default,model=virtio \
   --graphics spice,listen=none \
   --video virtio \
+  --memorybacking source.type=memfd,access.mode=shared \
   --import \
   --noautoconsole
   # UEFI Secure Boot is disabled because NixOS systemd-boot isn't signed
   # against the default Microsoft keys; with SB on, OVMF rejects the
   # bootloader with "Access Denied".
   #
-  # virtiofs (requires virtiofsd installed on host):
-  # --memorybacking source.type=memfd,access.mode=shared \
+  # --memorybacking is always on so attaching a virtiofs share later
+  # doesn't require redefining the domain. Harmless when no virtiofs.
+  #
+  # virtiofs share (requires virtiofsd installed on host, plus SHARE_DIR set):
   # --filesystem "driver.type=virtiofs,source=$SHARE_DIR,target=shared" \
 
 echo

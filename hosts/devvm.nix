@@ -25,8 +25,18 @@
   services.xserver.enable = true;
   services.xserver.displayManager.lightdm.enable = true;
   services.xserver.desktopManager.xfce.enable = true;
+  services.xserver.desktopManager.xfce.enableScreensaver = false;
   services.displayManager.defaultSession = "xfce";
   services.xserver.xkb.layout = "gb";
+
+  # No screen blanking, no DPMS standby/suspend/off — this is a VM, the
+  # host already handles screen lock for the human.
+  services.xserver.serverFlagsSection = ''
+    Option "BlankTime" "0"
+    Option "StandbyTime" "0"
+    Option "SuspendTime" "0"
+    Option "OffTime" "0"
+  '';
 
   # SPICE: bidirectional clipboard + display auto-resize
   services.spice-vdagentd.enable = true;
