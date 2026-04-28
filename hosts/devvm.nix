@@ -41,6 +41,15 @@
   # SPICE: bidirectional clipboard + display auto-resize
   services.spice-vdagentd.enable = true;
 
+  # spice-vdagent hardcodes a search for /dev/dri/card0; under UEFI the
+  # qxl/virtio-gpu DRM device often shows up as card1, breaking both
+  # clipboard and auto-resize. Symlink whichever virtio/QXL DRM card we
+  # have to dri/card0.
+  services.udev.extraRules = ''
+    SUBSYSTEM=="drm", ATTRS{vendor}=="0x1af4", ATTRS{device}=="0x1050", SYMLINK+="dri/card0"
+    SUBSYSTEM=="drm", ATTRS{vendor}=="0x1b36", ATTRS{device}=="0x0100", SYMLINK+="dri/card0"
+  '';
+
   # sound
   services.pipewire = {
     enable = true;

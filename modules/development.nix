@@ -30,6 +30,7 @@
 
     # languages and runtimes (version-pinned runtimes managed by mise)
     mise
+    python3   # required by some mise plugins
 
     # search
     silver-searcher

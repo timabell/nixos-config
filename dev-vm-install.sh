@@ -13,9 +13,8 @@ NAME=devvm
 MEMORY_MIB=8192
 VCPUS=4
 DISK=/var/lib/libvirt/images/devvm.qcow2
-# To enable the virtiofs shared folder, install `virtiofsd` on the host, set
-# SHARE_DIR, and uncomment the two flags marked "virtiofs" below.
-# SHARE_DIR=$HOME/devvm-share   # host dir exposed to the VM as /home/tim/work
+SHARE_DIR=$HOME/no-sync/devvm   # host dir, mounted in the VM as /home/tim/work via 9p
+SHARE_TAG=work
 # ----------------------------------
 
 if [[ ! -f $DISK ]]; then
@@ -23,7 +22,7 @@ if [[ ! -f $DISK ]]; then
   exit 1
 fi
 
-# mkdir -p "$SHARE_DIR"   # virtiofs
+mkdir -p "$SHARE_DIR"
 
 virt-install \
   --name "$NAME" \
@@ -37,17 +36,19 @@ virt-install \
   --graphics spice,listen=none \
   --video virtio \
   --memorybacking source.type=memfd,access.mode=shared \
+  --filesystem "driver.type=virtiofs,source=$SHARE_DIR,target=$SHARE_TAG" \
   --import \
   --noautoconsole
   # UEFI Secure Boot is disabled because NixOS systemd-boot isn't signed
   # against the default Microsoft keys; with SB on, OVMF rejects the
   # bootloader with "Access Denied".
   #
-  # --memorybacking is always on so attaching a virtiofs share later
-  # doesn't require redefining the domain. Harmless when no virtiofs.
-  #
-  # virtiofs share (requires virtiofsd installed on host, plus SHARE_DIR set):
-  # --filesystem "driver.type=virtiofs,source=$SHARE_DIR,target=shared" \
+  # virtiofs needs `virtiofsd` installed on the host and shared memory
+  # backing (--memorybacking above). Near-native perf, handles big trees
+  # with many small files (build outputs, node_modules, etc.).
+  # Inside the VM:
+  #   sudo mkdir -p /home/tim/work
+  #   sudo mount -t virtiofs $SHARE_TAG /home/tim/work
 
 echo
 echo "Defined and started libvirt domain '$NAME'."
