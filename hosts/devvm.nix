@@ -59,6 +59,14 @@
     options = [ "nofail" ];
   };
 
+  # 8 GiB swapfile. The qcow2 ships swapless; npm installs of big
+  # dep trees can blow past 16 GiB RAM and trigger OOM-kills, taking
+  # the X session with them.
+  swapDevices = [{
+    device = "/swap/swapfile";
+    size = 8192;
+  }];
+
   # sound
   services.pipewire = {
     enable = true;
