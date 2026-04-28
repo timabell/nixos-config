@@ -30,7 +30,7 @@ virt-install \
   --vcpus "$VCPUS" \
   --cpu host-passthrough \
   --boot firmware=efi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=no,firmware.feature1.name=enrolled-keys,firmware.feature1.enabled=no \
-  --disk "path=$DISK,bus=virtio" \
+  --disk "path=$DISK,bus=virtio,cache=writeback,io=native,discard=unmap,queues=$VCPUS" \
   --osinfo linux2022 \
   --network network=default,model=virtio \
   --graphics spice,listen=none \
@@ -42,6 +42,12 @@ virt-install \
   # UEFI Secure Boot is disabled because NixOS systemd-boot isn't signed
   # against the default Microsoft keys; with SB on, OVMF rejects the
   # bootloader with "Access Denied".
+  #
+  # Disk tuning (npm-install scale write storms otherwise crawl):
+  #   cache=writeback  - use host page cache. Big speedup; tiny crash risk.
+  #   io=native        - Linux AIO instead of threadpool. Lower latency.
+  #   discard=unmap    - trim/discard, keeps the qcow2 sparse over time.
+  #   queues=$VCPUS    - multi-queue virtio-blk; parallelises IO per vCPU.
   #
   # virtiofs needs `virtiofsd` installed on the host and shared memory
   # backing (--memorybacking above). Near-native perf, handles big trees
