@@ -7,6 +7,9 @@ LUKS encryption, and btrfs.
 
 Also available as a variation for an [isolated development vm](dev-vm.md) to mitigate supply-chain attacks on the primary host.
 
+See [security-boundaries.md](security-boundaries.md) for the threat model and
+host / VM / bubblewrap layering this is built around.
+
 ## Installing from live USB
 
 ### Boot the NixOS live USB

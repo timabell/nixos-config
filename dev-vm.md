@@ -104,30 +104,43 @@ sudo qemu-img resize /var/lib/libvirt/images/devvm.qcow2 80G
 expand the partition and root filesystem to fill the new disk on first
 boot.
 
-### 6. Create the VM in virt-manager
+### 6. Define and start the VM
 
-1. **File → New Virtual Machine → Import existing disk image**
-2. Provide path: `/var/lib/libvirt/images/devvm.qcow2`. OS type: Linux,
-   Generic Linux 2022 (or NixOS if listed).
-3. Memory: 8192 MiB or more (Rider is hungry). CPUs: 4+.
-4. Tick **Customize configuration before install**.
+Run the install script (in this repo):
 
-In the customization screen:
+```
+./dev-vm-install.sh
+```
 
-- **Overview → Firmware** — set to **UEFI** (OVMF). The image is built
-  with systemd-boot + an ESP partition, so it will not boot under BIOS
-  firmware. If "UEFI" isn't offered, install `edk2-ovmf` (or your distro's
-  equivalent OVMF package) on the host and restart libvirtd.
-- **Display Spice** — keep, set Listen type to "None".
-- **Video** — set to virtio (or QXL as a fallback if virtio gives you trouble). Don't use Cirrus.
-- **Channels** — confirm `org.spice-space.webdav.0` and the qemu-ga channel
-  are present (they auto-add for Linux guests).
-Click **Begin Installation**. (It's not really installing — it just boots
-the pre-built image.)
+It calls `virt-install` with the right flags for an imported existing
+disk: UEFI firmware (Secure Boot off — NixOS systemd-boot isn't signed
+against the default Microsoft keys), virtio disk, virtio video, SPICE
+display, host-passthrough CPU, 8 GiB / 4 vCPU. Edit the variables at
+the top of the script if you want different memory / CPU counts or a
+different image path.
+
+Open the console to see what's going on:
+
+```
+virt-viewer devvm
+```
+
+Or use virt-manager — `devvm` will appear in the list.
 
 If you want a virtiofs shared folder from the host, see "Adding a
 virtiofs share" below — it's intentionally not part of the baseline VM
-setup.
+setup, and is opt-in via flags in the script.
+
+To recreate the domain (e.g. after editing the script):
+
+```
+virsh destroy devvm 2>/dev/null
+virsh undefine devvm --nvram
+./dev-vm-install.sh
+```
+
+The `--nvram` flag is important: without it the previous SB-enabled
+NVRAM file lingers and the new domain inherits it.
 
 ### 7. First boot of the bare image
 
