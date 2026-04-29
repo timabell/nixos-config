@@ -22,8 +22,7 @@
             config.allowUnfree = true;
           };
         in {
-          # mise 2025.5.3 (stable) compiles node from source ignoring
-          # node.compile = false. Newer mise honours it.
+          # mise 2025.5.3 (stable) compiles node from source on nixos (slow) instead of using the pre-built binaries
           mise = unstable.mise;
           # claude-code releases weekly; stable nixpkgs lags.
           claude-code = unstable.claude-code;
