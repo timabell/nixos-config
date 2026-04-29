@@ -182,6 +182,103 @@ GPG: there are deliberately no keys. `git commit` works without `-S`. If
 you hit a remote that enforces signing, do the final commit/push from the
 host.
 
+## Daily use
+
+### Getting code into the VM
+
+The host's `~/no-sync/devvm/` is auto-mounted at `/home/tim/work/` in the
+VM via virtiofs. Anything dropped there from the host is visible
+immediately inside the VM and vice versa.
+
+Two patterns:
+
+- **Clone directly inside the VM.** `git clone https://github.com/foo/bar`
+  in `/home/tim/work/`. Code lives on the share; visible from host for
+  backup, host-side tooling, etc.
+- **Clone on the host into `~/no-sync/devvm/<repo>/`.** Same end state.
+  Useful when you've already got the repo somewhere on the host.
+
+### SSH from host
+
+The VM runs sshd. Paste-friendly terminal access:
+
+```
+virsh domifaddr devvm           # find the IP
+ssh tim@<ip>
+```
+
+Useful when the SPICE clipboard is being flaky, or for running long
+commands from a host terminal where paste already works.
+
+### Per-project dev shells (node, dotnet, rust, …)
+
+The VM has `direnv` + `nix-direnv` wired into zsh. Per-project runtime
+versioning happens via a flake.nix + `.envrc` in each repo, replacing
+mise / nvm / asdf. Example for a Node project that had a `.nvmrc`:
+
+`flake.nix`:
+
+```nix
+{
+  description = "<project name> dev shell";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+  outputs = { self, nixpkgs }:
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      devShells.${system}.default = pkgs.mkShell {
+        packages = with pkgs; [ nodejs_24 ];
+      };
+    };
+}
+```
+
+`.envrc`:
+
+```
+use flake
+```
+
+Then once per project:
+
+```
+git add flake.nix .envrc
+direnv allow
+```
+
+`cd` out and back in — direnv loads the shell, `node --version`
+reflects the flake. `git rm .nvmrc` (and friends) once you're satisfied
+with the flake.
+
+For other languages add to `packages`: `dotnet-sdk_8`, `rustup` or
+`rustc cargo`, `python3`, `go`, etc.
+
+### Iterating on the devvm NixOS config itself
+
+The flake repo lives at `~/work/nixos-config/` inside the VM (the share
+copy). Edit on host, the change is live in the VM. Apply:
+
+```
+cd ~/work/nixos-config
+sudo nixos-rebuild switch --flake .#devvm
+```
+
+For a full reset (e.g. after major changes), reboot:
+
+```
+sudo reboot
+```
+
+### Risky-command sandbox inside the VM
+
+`bubblewrap` (`bwrap`) is installed for nested sandboxing of single
+commands inside the VM — typically LLM agents running with permission
+bypass. See [security-boundaries.md](security-boundaries.md) for the
+threat model. The VM is the host-protection boundary; bwrap inside the
+VM is defence-in-depth against an agent stepping outside its remit
+within the VM.
+
 ## Updating the VM later
 
 Rebuild in place from inside the VM — the same command you used in step 8:

@@ -23,6 +23,10 @@
             imports = [ ./home/tim.nix ];
             # No GPG keys in the VM — keys live on the host.
             programs.git.extraConfig.commit.gpgsign = lib.mkForce false;
+            # Per-project dev shells via direnv + nix-direnv. VM-only;
+            # see hosts/devvm.nix for reasoning.
+            programs.direnv.enable = true;
+            programs.direnv.nix-direnv.enable = true;
           };
         }
       ];

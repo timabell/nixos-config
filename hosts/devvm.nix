@@ -107,6 +107,14 @@
 
     # node + npm. VM-only — not in modules/development.nix because npm
     # is not safe to run on primary hosts. Per-project versions via a
+    # flake.nix + direnv inside individual repos.
     nodejs_24
+
+    # direnv + nix-direnv: per-project dev shells via flake.nix +
+    # `.envrc` containing `use flake`. VM-only because auto-loading
+    # repo-local config (even with `direnv allow`) is one more
+    # supply-chain edge we don't want on the primary host.
+    direnv
+    nix-direnv
   ];
 }
