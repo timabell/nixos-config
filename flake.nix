@@ -27,6 +27,28 @@
             # see hosts/devvm.nix for reasoning.
             programs.direnv.enable = true;
             programs.direnv.nix-direnv.enable = true;
+            # Per-project runtime versions via mise. VM-only.
+            programs.mise = {
+              enable = true;
+              enableZshIntegration = true;
+              globalConfig = {
+                tools.adr-tools = "3.0.0";
+                settings = {
+                  # Read .nvmrc / global.json / .ruby-version etc. so
+                  # legacy repos work without an explicit .mise.toml.
+                  idiomatic_version_file_enable_tools = [ "node" "dotnet" "ruby" ];
+                  not_found_auto_install = false;
+                };
+              };
+            };
+            # Re-evaluate DOTNET_ROOT on every cd so dotnet-tools find
+            # whichever .NET version mise has provisioned for the project.
+            programs.zsh.initContent = lib.mkAfter ''
+              function _update_dotnet_root() {
+                export DOTNET_ROOT=$(mise where dotnet-core 2>/dev/null)
+              }
+              add-zsh-hook precmd _update_dotnet_root
+            '';
           };
         }
       ];

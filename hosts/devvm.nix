@@ -50,6 +50,21 @@
     SUBSYSTEM=="drm", ATTRS{vendor}=="0x1b36", ATTRS{device}=="0x0100", SYMLINK+="dri/card0"
   '';
 
+  # FHS shim for prebuilt binaries (mise-installed node, .NET, Bun, etc.)
+  # Without this, prebuilt linux-x64 binaries can't find their dynamic
+  # linker (/lib64/ld-linux-x86-64.so.2 doesn't exist on NixOS) and
+  # either fail or fall back to source builds.
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc.lib   # libstdc++ — modern node, .NET, anything C++
+    zlib               # very commonly linked
+    openssl            # node's native modules, .NET, etc.
+    icu                # node's intl support
+    libxml2
+    libuuid
+    glib
+  ];
+
   # Auto-mount the virtiofs share that dev-vm-install.sh attaches.
   # Tag "work" matches SHARE_TAG in the host script. nofail keeps the VM
   # bootable if a future variant runs without the share attached.
@@ -116,5 +131,13 @@
     # supply-chain edge we don't want on the primary host.
     direnv
     nix-direnv
+
+    # mise — per-project runtime version manager. Hybrid model: nix
+    # provides system-level node/npm/claude/etc., mise provides
+    # exact-version-match for client repos with a .tool-versions or
+    # .nvmrc. VM-only for supply-chain reasons; mise pulls upstream
+    # prebuilts and we don't want those touching the host.
+    mise
+    python3       # required by some mise plugins
   ];
 }
