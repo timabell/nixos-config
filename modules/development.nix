@@ -28,9 +28,8 @@
     pkg-config
     openssl
 
-    # languages and runtimes (version-pinned runtimes managed by mise)
-    mise
-    python3   # required by some mise plugins
+    # languages and runtimes — managed via per-project nix flakes / direnv,
+    # not a global tool-version manager.
 
     # search
     silver-searcher

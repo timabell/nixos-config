@@ -105,8 +105,8 @@
     xclip
     pavucontrol
 
-    # node + npm (nix-native; mise's prebuilts misbehave on NixOS).
-    # VM-only — not in modules/development.nix because npm is not safe to run on primary hosts
+    # node + npm. VM-only — not in modules/development.nix because npm
+    # is not safe to run on primary hosts. Per-project versions via a
     nodejs_24
   ];
 }
