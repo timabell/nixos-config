@@ -38,6 +38,10 @@
                   # legacy repos work without an explicit .mise.toml.
                   idiomatic_version_file_enable_tools = [ "node" "dotnet" "ruby" ];
                   not_found_auto_install = false;
+                  # Force prebuilt node tarballs instead of source build.
+                  # mise's default in 2025.5.3 (nixpkgs 25.05) compiles V8
+                  # from source which is ~10× slower than the prebuilt.
+                  node.compile = false;
                 };
               };
             };
