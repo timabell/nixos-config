@@ -139,5 +139,10 @@
     # prebuilts and we don't want those touching the host.
     mise
     python3       # required by some mise plugins
+
+    # Anthropic's Claude Code CLI. VM-only — agents run inside the VM,
+    # never on the host. Pulled from unstable via overlay in flake.nix
+    # so we get current releases (claude-code updates weekly).
+    claude-code
   ];
 }
