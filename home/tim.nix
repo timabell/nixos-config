@@ -14,7 +14,7 @@
     autosuggestion.enable = true;
     oh-my-zsh = {
       enable = true;
-      plugins = [ "alias-finder" "fzf" "git" "mise" ];
+      plugins = [ "alias-finder" "fzf" "git" ];
     };
     initContent = ''
       # disable magic functions (pasting URLs)
@@ -37,13 +37,6 @@
 
       export GPG_TTY=$(tty)
       export EDITOR=vim
-      eval "$(mise activate zsh)"
-
-      # set DOTNET_ROOT so that dotnet-tools work (re-evaluated on cd via precmd, after mise)
-      function _update_dotnet_root() {
-        export DOTNET_ROOT=$(mise where dotnet-core 2>/dev/null)
-      }
-      add-zsh-hook precmd _update_dotnet_root
 
       export DISABLE_AUTOUPDATER=1 # turn off claude code's broken updater
     '';
@@ -322,9 +315,6 @@
     # gitui solarized theme
     "gitui/theme.ron".source = ../dotfiles/gitui-theme.ron;
 
-    # mise (tool version manager)
-    "mise/config.toml".source = ../dotfiles/mise-config.toml;
-
     # pipewire: block slack from controlling mic volume
     "pipewire/pipewire-pulse.conf.d/20-slack-block-mic.conf".source =
       ../dotfiles/pipewire-slack-block-mic.conf;
@@ -347,8 +337,8 @@
 
   services.redshift = {
     enable = true;
-    latitude = 51.3598;
-    longitude = -1.1485;
+    latitude = 51.0;
+    longitude = -1.0;
     temperature = {
       day = 6500;
       night = 3500;

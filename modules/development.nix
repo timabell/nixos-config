@@ -28,8 +28,8 @@
     pkg-config
     openssl
 
-    # languages and runtimes (version-pinned runtimes managed by mise)
-    mise
+    # languages and runtimes — managed via per-project nix flakes / direnv,
+    # not a global tool-version manager.
 
     # search
     silver-searcher
@@ -52,5 +52,9 @@
 
     # diff and merge
     kdiff3
+
+    # per-process sandbox (used for risky commands / LLM agents — see
+    # security-boundaries.md). Pairs with timabell/sandbox.
+    bubblewrap
   ];
 }
