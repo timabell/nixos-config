@@ -107,6 +107,6 @@
 
     # node + npm (nix-native; mise's prebuilts misbehave on NixOS).
     # VM-only — not in modules/development.nix because npm is not safe to run on primary hosts
-    nodejs_25
+    nodejs_24
   ];
 }
