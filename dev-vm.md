@@ -279,6 +279,17 @@ threat model. The VM is the host-protection boundary; bwrap inside the
 VM is defence-in-depth against an agent stepping outside its remit
 within the VM.
 
+### Handling `.env` secrets
+
+Having `.env` files on disk leaves them exposed to marauding malware and LLMs. While not possible to completely protect with this setup we can raise the bar. This vm includes [gopass](https://www.gopass.pw/) which can be used to encryt secrets and supply them just-in-time to run a process (usually a webserver/api under development).
+
+```sh
+gopass insert project/environment/SECRET_NAME # prompts for value
+gopass list
+gopass show project/environment/SECRET_NAME
+gopass env project/environment/ npm run # run a command (e.g. npm run) with secrets available as env vars
+```
+
 ## Updating the VM later
 
 Rebuild in place from inside the VM — the same command you used in step 8:

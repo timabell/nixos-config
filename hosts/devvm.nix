@@ -93,6 +93,17 @@
 
   programs.zsh.enable = true;
 
+  # GnuPG: needed by mise (upstream signature verification) and by gopass
+  # (decrypts the password store with the user's private key). The
+  # programs.gnupg.agent option installs gnupg, sets up gpg-agent as a
+  # user service, and wires in a pinentry — without one, decryption
+  # fails with "No pinentry". pinentry-curses keeps things terminal-only
+  # so gopass works the same over SSH and inside an XFCE terminal.
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-curses;
+  };
+
   # NetworkManager replaces the base's plain DHCP for desktop UX.
   networking.networkmanager.enable = true;
   networking.useDHCP = lib.mkForce false;
@@ -139,12 +150,13 @@
     # prebuilts and we don't want those touching the host.
     mise
     python3       # required by some mise plugins
-    gnupg         # so mise can verify upstream signatures
-                  # (binary only — no user keys are imported in the VM)
 
     # Anthropic's Claude Code CLI. VM-only — agents run inside the VM,
     # never on the host. Pulled from unstable via overlay in flake.nix
     # so we get current releases (claude-code updates weekly).
     claude-code
+
+    # .env password manager https://github.com/gopasspw/gopass
+    gopass
   ];
 }
