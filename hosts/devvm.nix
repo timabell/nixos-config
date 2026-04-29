@@ -139,6 +139,8 @@
     # prebuilts and we don't want those touching the host.
     mise
     python3       # required by some mise plugins
+    gnupg         # so mise can verify upstream signatures
+                  # (binary only — no user keys are imported in the VM)
 
     # Anthropic's Claude Code CLI. VM-only — agents run inside the VM,
     # never on the host. Pulled from unstable via overlay in flake.nix
