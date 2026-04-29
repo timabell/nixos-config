@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     disko.url = "github:nix-community/disko/latest";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
@@ -10,9 +11,24 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, disko, nixos-hardware, home-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, disko, nixos-hardware, home-manager, ... }:
     let
+      # Overlay that pulls specific packages from unstable when stable's
+      # version is too old. Applied only to the devvm — keep x15 stable.
+      unstableOverlay = final: prev:
+        let
+          unstable = import nixpkgs-unstable {
+            inherit (final) system;
+            config.allowUnfree = true;
+          };
+        in {
+          # mise 2025.5.3 (stable) compiles node from source ignoring
+          # node.compile = false. Newer mise honours it.
+          mise = unstable.mise;
+        };
+
       devvmModules = [
+        { nixpkgs.overlays = [ unstableOverlay ]; }
         ./hosts/devvm.nix
         ./modules/development.nix
         home-manager.nixosModules.home-manager
