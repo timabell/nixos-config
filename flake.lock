@@ -21,6 +21,27 @@
         "type": "github"
       }
     },
+    "gitopolis": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1777587114,
+        "narHash": "sha256-NBHyD9pD9+4qOeFTfR9h9gWB4Uiak1S44DrQS5giaZc=",
+        "owner": "timabell",
+        "repo": "gitopolis",
+        "rev": "9c0936d7d2bc395a7300ecd0ddc8c05fd570fd3c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "timabell",
+        "ref": "nix",
+        "repo": "gitopolis",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -92,6 +113,7 @@
     "root": {
       "inputs": {
         "disko": "disko",
+        "gitopolis": "gitopolis",
         "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
