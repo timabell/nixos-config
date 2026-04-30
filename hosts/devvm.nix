@@ -115,13 +115,13 @@
   # allow IDEs that aren't free-licensed
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (pkgs.lib.getName pkg) [
-      "jetbrains-toolbox"
+      "rider"
       "vscode"
     ];
 
   environment.systemPackages = with pkgs; [
     # IDEs
-    jetbrains-toolbox
+    jetbrains.rider
     vscode
 
     # browser (for docs/auth flows inside the VM)

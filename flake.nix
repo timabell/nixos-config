@@ -26,6 +26,10 @@
           mise = unstable.mise;
           # claude-code releases weekly; stable nixpkgs lags.
           claude-code = unstable.claude-code;
+          # JetBrains IDEs ship quarterly; stable nixpkgs pins an old
+          # minor. Pull the whole jetbrains set from unstable so any
+          # IDE added in devvm.nix gets the current release.
+          jetbrains = unstable.jetbrains;
         };
 
       devvmModules = [
