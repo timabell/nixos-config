@@ -9,10 +9,18 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    gitopolis.url = "github:timabell/gitopolis/nix";
+    gitopolis.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, disko, nixos-hardware, home-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, disko, nixos-hardware, home-manager, gitopolis, ... }:
     let
+      # Gitopolis isn't in nixpkgs; pull it from its own flake and expose
+      # as `pkgs.gitopolis` so modules/development.nix can list it
+      # alongside everything else.
+      gitopolisOverlay = final: prev: {
+        gitopolis = gitopolis.packages.${final.system}.default;
+      };
       # Overlay that pulls specific packages from unstable when stable's
       # version is too old. Applied only to the devvm — keep x15 stable.
       unstableOverlay = final: prev:
@@ -33,7 +41,7 @@
         };
 
       devvmModules = [
-        { nixpkgs.overlays = [ unstableOverlay ]; }
+        { nixpkgs.overlays = [ unstableOverlay gitopolisOverlay ]; }
         ./hosts/devvm.nix
         ./modules/development.nix
         home-manager.nixosModules.home-manager
@@ -81,6 +89,7 @@
       nixosConfigurations.x15 = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
+          { nixpkgs.overlays = [ gitopolisOverlay ]; }
           disko.nixosModules.disko
           ./disko/x15.nix
           ./hosts/x15.nix
