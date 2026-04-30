@@ -120,6 +120,11 @@
     xclip
     pavucontrol
 
+    # Rider (and other .NET tools launched via jetbrains-toolbox) dlopen
+    # libicu at runtime; without it startup fails with "Couldn't find a
+    # valid ICU package installed on the system".
+    icu
+
     # node + npm. VM-only — not in modules/development.nix because npm
     # is not safe to run on primary hosts. Per-project versions via a
     # flake.nix + direnv inside individual repos.
