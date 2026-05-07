@@ -65,6 +65,18 @@
     glib
   ];
 
+  # Wire up trust for the ASP.NET HTTPS dev cert. The user runs
+  # `dotnet dev-certs https --trust` themselves (dotnet is mise-managed,
+  # not in nix, so it isn't on PATH at activation time) which on Linux
+  # drops the cert into ~/.aspnet/dev-certs/trust/ as an OpenSSL hashed
+  # CA dir. Putting that on SSL_CERT_DIR alongside /etc/ssl/certs (which
+  # must stay — SSL_CERT_DIR *replaces* rather than augments OpenSSL's
+  # default search path) lets .NET and other OpenSSL clients pick the
+  # cert up. Replaces the Debian/Ubuntu update-ca-certificates flow that
+  # has no NixOS equivalent.
+  environment.sessionVariables.SSL_CERT_DIR =
+    "$HOME/.aspnet/dev-certs/trust:/etc/ssl/certs";
+
   # Auto-mount the virtiofs share that dev-vm-install.sh attaches.
   # Tag "work" matches SHARE_TAG in the host script. nofail keeps the VM
   # bootable if a future variant runs without the share attached.
