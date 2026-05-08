@@ -11,6 +11,7 @@
     gitui
     gh
     delta
+    gitopolis
 
     # editors
     vim
