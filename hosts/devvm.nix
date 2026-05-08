@@ -143,6 +143,15 @@
     xclip
     pavucontrol
 
+    # certutil, used by `dotnet dev-certs https --trust` to register
+    # the dev cert in the Firefox/Chromium NSS databases. Without it
+    # the trust step reports "only partially trusted" and
+    # `dotnet dev-certs --check` returns non-zero even though OpenSSL
+    # trust (the path .NET API↔API HTTPS uses, via SSL_CERT_DIR above)
+    # is fine. Pulled from nssTools — the small split package — to
+    # avoid dragging in the full nss library set.
+    nssTools
+
     # node + npm. VM-only — not in modules/development.nix because npm
     # is not safe to run on primary hosts. Per-project versions via a
     # flake.nix + direnv inside individual repos.
