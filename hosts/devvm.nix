@@ -69,13 +69,20 @@
   # `dotnet dev-certs https --trust` themselves (dotnet is mise-managed,
   # not in nix, so it isn't on PATH at activation time) which on Linux
   # drops the cert into ~/.aspnet/dev-certs/trust/ as an OpenSSL hashed
-  # CA dir. Putting that on SSL_CERT_DIR alongside /etc/ssl/certs (which
-  # must stay — SSL_CERT_DIR *replaces* rather than augments OpenSSL's
-  # default search path) lets .NET and other OpenSSL clients pick the
-  # cert up. Replaces the Debian/Ubuntu update-ca-certificates flow that
-  # has no NixOS equivalent.
+  # CA dir. SSL_CERT_DIR points .NET's bundled libssl at that dir.
+  #
+  # Second path is ${pkgs.openssl}/etc/ssl/certs — *not* /etc/ssl/certs.
+  # .NET on NixOS dlopens libssl from a nix-store openssl (the one
+  # nix-ld provides to mise's dotnet) whose compiled-in OPENSSLDIR is
+  # its own /nix/store/...-openssl-*/etc/ssl/certs. dev-certs --check
+  # honours SSL_CERT_DIR but only resolves entries that line up with
+  # that bundled OpenSSL's view of the world; /etc/ssl/certs (used by
+  # the system curl with its own OPENSSLDIR) is invisible to it and
+  # produces a false `[76] not trusted by OpenSSL` even when runtime
+  # trust works. Using ${pkgs.openssl} resolves at build time to the
+  # exact path .NET expects.
   environment.sessionVariables.SSL_CERT_DIR =
-    "$HOME/.aspnet/dev-certs/trust:/etc/ssl/certs";
+    "$HOME/.aspnet/dev-certs/trust:${pkgs.openssl}/etc/ssl/certs";
 
   # Auto-mount the virtiofs share that dev-vm-install.sh attaches.
   # Tag "work" matches SHARE_TAG in the host script. nofail keeps the VM
