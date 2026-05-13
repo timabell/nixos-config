@@ -5,6 +5,10 @@
   virtualisation.docker.enable = true;
 
   environment.systemPackages = with pkgs; [
+    # containers
+    oxker # rust docker TUI
+    lazydocker # go docker TUI
+
     # version control
     gitFull # includes gitk and git-gui
     tig
