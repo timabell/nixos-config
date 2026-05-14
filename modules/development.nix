@@ -9,6 +9,9 @@
     oxker # rust docker TUI
     lazydocker # go docker TUI
 
+    # cloud
+    azure-cli # Azure CLI (az)
+
     # version control
     gitFull # includes gitk and git-gui
     tig
