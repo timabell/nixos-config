@@ -306,6 +306,10 @@
   # --- XDG config files ---
 
   xdg.configFile = {
+    # direnv (relocate per-project layout dir out of project trees;
+    # see ../dotfiles/direnvrc for rationale)
+    "direnv/direnvrc".source = ../dotfiles/direnvrc;
+
     # ghostty
     "ghostty/config".source = ../dotfiles/ghostty-config;
 

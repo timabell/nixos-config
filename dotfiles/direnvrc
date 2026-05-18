@@ -1,0 +1,17 @@
+# Move direnv's per-project scratch directory out of the project tree.
+#
+# Default behaviour: direnv creates `.direnv/` in the project root.
+# With nix-direnv this includes `flake-inputs/`, which symlinks every
+# flake input (including the implicit `self` — a snapshot of the whole
+# repo) into the project. Tools like vitest then discover and run
+# duplicate copies of the project's own source/tests from there.
+#
+# This override relocates the per-project layout dir to a hash-keyed
+# directory under XDG_CACHE_HOME, so nothing direnv-related ever lands
+# inside a project the user is working on.
+
+: "${XDG_CACHE_HOME:=$HOME/.cache}"
+
+direnv_layout_dir() {
+  echo "${XDG_CACHE_HOME}/direnv/layouts/$(echo -n "${PWD}" | sha1sum | cut -d ' ' -f 1)"
+}
