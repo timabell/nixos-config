@@ -54,6 +54,12 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
+          # Rename pre-existing files out of the way instead of failing
+          # activation. Without this, any home.file declaration that
+          # collides with something VS Code/Firefox/etc. wrote on first
+          # launch blocks the whole rebuild and leaves the VM in a
+          # half-activated state.
+          home-manager.backupFileExtension = "backup";
           home-manager.users.tim = { lib, ... }: {
             imports = [ ./home/tim.nix ];
             # No GPG keys in the VM — keys live on the host.
@@ -87,6 +93,20 @@
                 export DOTNET_ROOT=$(mise where dotnet-core 2>/dev/null)
               }
               add-zsh-hook precmd _update_dotnet_root
+            '';
+            # VS Code on XFCE auto-picks a secret-storage backend at
+            # startup and hangs when the chosen one (KWallet, in our
+            # case — pulled in via kdiff3's KDE deps) tries to unlock a
+            # GPG-encrypted wallet we don't have keys for. "basic"
+            # writes secrets in plain text under ~/.config/Code. That's
+            # acceptable here: the VM is disposable, sandboxed, and
+            # holds no GPG keys (see commit.gpgsign override above) —
+            # the threat of plaintext VS Code tokens on the VM disk
+            # isn't different in kind from the VM itself.
+            home.file.".vscode/argv.json".text = ''
+              {
+                "password-store": "basic"
+              }
             '';
           };
         }
