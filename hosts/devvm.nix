@@ -186,5 +186,16 @@
 
     # .env password manager https://github.com/gopasspw/gopass
     gopass
+
+    # Gas City prerequisites — https://github.com/gastownhall/gascity
+    # (docs/getting-started/installation.md#prerequisites). VM-only:
+    # Gas City and its agents run inside the VM. The remaining prereqs
+    # are already covered — jq, git and gnumake come from
+    # modules/development.nix, and flock ships in util-linux, which is
+    # in NixOS's default system packages.
+    tmux
+    dolt    # 1.86.2+ required; pinned to unstable via flake.nix overlay
+    beads   # the `bd` CLI; unstable-only, see flake.nix overlay
+    go      # source builds of Gas City (1.25+)
   ];
 }

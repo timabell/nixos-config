@@ -38,6 +38,12 @@
           # minor. Pull the whole jetbrains set from unstable so any
           # IDE added in devvm.nix gets the current release.
           jetbrains = unstable.jetbrains;
+          # Gas City prerequisites. Stable's dolt is 1.52.3; Gas City's
+          # managed Dolt checks reject anything below 1.86.2, which is
+          # exactly what unstable ships. beads (the `bd` CLI) isn't in
+          # stable nixpkgs at all — unstable has 1.0.3.
+          dolt = unstable.dolt;
+          beads = unstable.beads;
         };
 
       devvmModules = [
