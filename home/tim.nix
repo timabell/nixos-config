@@ -326,11 +326,6 @@
     # redshift profiles (switch manually as needed)
     "redshift-day.conf".source = ../dotfiles/redshift-day.conf;
     "redshift-night.conf".source = ../dotfiles/redshift-night.conf;
-
-    # logseq
-    "logseq/config/plugins.edn".source = ../dotfiles/logseq/config/plugins.edn;
-    "logseq/settings/logseq-task-management-shortcuts.json".source =
-      ../dotfiles/logseq/settings/logseq-task-management-shortcuts.json;
   };
 
   # --- cargo ---

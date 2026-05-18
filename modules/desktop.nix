@@ -51,7 +51,6 @@
     signal-desktop
     slack
     telegram-desktop
-    logseq
 
     # desktop utilities
     parcellite
