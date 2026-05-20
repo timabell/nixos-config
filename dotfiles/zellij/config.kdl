@@ -183,3 +183,5 @@ plugins {
 pane_frames false
 
 theme "tokyo-night-light"
+
+show_startup_tips false
