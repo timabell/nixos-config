@@ -6,7 +6,6 @@
 
   environment.systemPackages = with pkgs; [
     # containers
-    oxker # rust docker TUI
     lazydocker # go docker TUI
 
     # cloud
