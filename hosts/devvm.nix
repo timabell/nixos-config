@@ -65,6 +65,13 @@
     glib
   ];
 
+  # Public CA bundle for system clients (curl, mise's dotnet-install.sh,
+  # etc). Must be set explicitly because SSL_CERT_DIR below overrides
+  # OpenSSL's compiled-in default search path at runtime, leaving clients
+  # that rely on the compiled OPENSSLDIR (system curl in particular) with
+  # no view of the public CAs.
+  environment.sessionVariables.SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+
   # Wire up trust for the ASP.NET HTTPS dev cert. The user runs
   # `dotnet dev-certs https --trust` themselves (dotnet is mise-managed,
   # not in nix, so it isn't on PATH at activation time) which on Linux
@@ -76,11 +83,9 @@
   # nix-ld provides to mise's dotnet) whose compiled-in OPENSSLDIR is
   # its own /nix/store/...-openssl-*/etc/ssl/certs. dev-certs --check
   # honours SSL_CERT_DIR but only resolves entries that line up with
-  # that bundled OpenSSL's view of the world; /etc/ssl/certs (used by
-  # the system curl with its own OPENSSLDIR) is invisible to it and
-  # produces a false `[76] not trusted by OpenSSL` even when runtime
-  # trust works. Using ${pkgs.openssl} resolves at build time to the
-  # exact path .NET expects.
+  # that bundled OpenSSL's view of the world and produces a false
+  # `[76] not trusted by OpenSSL` otherwise. Using ${pkgs.openssl}
+  # resolves at build time to the exact path .NET expects.
   environment.sessionVariables.SSL_CERT_DIR =
     "$HOME/.aspnet/dev-certs/trust:${pkgs.openssl}/etc/ssl/certs";
 
