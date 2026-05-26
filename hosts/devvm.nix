@@ -140,12 +140,14 @@
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (pkgs.lib.getName pkg) [
       "rider"
+      "webstorm"
       "vscode"
     ];
 
   environment.systemPackages = with pkgs; [
     # IDEs
     jetbrains.rider
+    jetbrains.webstorm
     vscode
 
     # browser (for docs/auth flows inside the VM)
