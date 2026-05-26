@@ -277,6 +277,10 @@
     \set show_all_row_counts 'SELECT sum(n_live_tup) FROM pg_stat_user_tables;'
   '';
 
+  # --- claude code settings ---
+
+  home.file.".claude/settings.json".source = ../dotfiles/claude-settings.json;
+
   # --- git global ignore (renamed from .cvsignore) ---
 
   home.file.".gitignore".text = ''
