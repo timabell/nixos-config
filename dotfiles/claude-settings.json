@@ -9,6 +9,11 @@
       "Bash(grep:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git status:*)",
+      "Bash(git blame:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
       "Bash(git rev-parse:*)",
       "Bash(uuidgen:*)",
       "Bash(./lint.sh)",
@@ -35,6 +40,11 @@
       "Bash(gh run watch:*)",
       "Bash(gh run list:*)"
     ],
-    "deny": []
+    "ask": [
+      "Bash(git commit:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)"
+    ]
   }
 }
