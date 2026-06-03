@@ -17,6 +17,7 @@
     enableZshIntegration = true;
     globalConfig = {
       tools.adr-tools = "3.0.0";
+      tools.python = "3.14.5";
       settings = {
         # Read .nvmrc / global.json / .ruby-version etc. so
         # legacy repos work without an explicit .mise.toml.
@@ -26,6 +27,11 @@
         # mise's default in 2025.5.3 (nixpkgs 25.05) compiles V8
         # from source which is ~10× slower than the prebuilt.
         node.compile = false;
+        # Same reasoning for python: the source build via
+        # python-build can't find zlib/openssl/etc. on NixOS's
+        # non-standard paths and dies at ensurepip. Use the
+        # python-build-standalone prebuilt instead.
+        python.compile = false;
       };
     };
   };
