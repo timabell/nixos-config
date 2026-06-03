@@ -187,6 +187,7 @@
     python3       # required by some mise plugins
     pipx          # isolated-venv installer for Python CLIs
     beads-tui     # `bdt` — TUI for the bd issue tracker (overlay in flake.nix)
+    mardi-gras    # `mg` — Go TUI for the bd issue tracker (overlay in flake.nix)
 
     # Anthropic's Claude Code CLI. VM-only — agents run inside the VM,
     # never on the host. Pulled from unstable via overlay in flake.nix

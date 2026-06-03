@@ -91,8 +91,34 @@
           };
         };
 
+      # mardi-gras (`mg`) — Go TUI for the `bd` issue tracker. Not in
+      # nixpkgs; pinned to a release tag. Built against unstable's Go
+      # toolchain because go.mod requires Go >= 1.25 and stable nixpkgs
+      # ships 1.24. To bump: change `rev` and clear both hashes to
+      # lib.fakeHash, rebuild, paste back the hashes nix prints.
+      mardiGrasOverlay = final: prev:
+        let
+          unstable = import nixpkgs-unstable {
+            inherit (final) system;
+            config.allowUnfree = true;
+          };
+        in {
+          mardi-gras = unstable.buildGoModule {
+            pname = "mardi-gras";
+            version = "0.22.0";
+            src = prev.fetchFromGitHub {
+              owner = "quietpublish";
+              repo = "mardi-gras";
+              rev = "v0.22.0";
+              hash = "sha256-JBiig+kI2X6SZhEb5mAiacLiMI5nIU0klWlBCBFshMo=";
+            };
+            vendorHash = "sha256-FuXR6Cq+BLJ7h5UqFEDJ/BVlWIUpye7GOpiqbhjv6aM=";
+            subPackages = [ "cmd/mg" ];
+          };
+        };
+
       devvmModules = [
-        { nixpkgs.overlays = [ unstableOverlay gitopolisOverlay lazydockerProfilesOverlay beadsTuiOverlay ]; }
+        { nixpkgs.overlays = [ unstableOverlay gitopolisOverlay lazydockerProfilesOverlay beadsTuiOverlay mardiGrasOverlay ]; }
         ./hosts/devvm.nix
         ./modules/development.nix
         home-manager.nixosModules.home-manager
