@@ -45,6 +45,7 @@
     # data
     sqlite
     sqlitebrowser
+    schema-explorer # SQL schema browser web app (binary: schemaexplorer)
     jq
 
     # utilities
