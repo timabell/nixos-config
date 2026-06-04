@@ -38,10 +38,10 @@
       "Bash(gh issue view:*)",
       "Bash(gh run view:*)",
       "Bash(gh run watch:*)",
+      "Bash(git commit:*)",
       "Bash(gh run list:*)"
     ],
     "ask": [
-      "Bash(git commit:*)"
     ],
     "deny": [
       "Bash(git push:*)"
