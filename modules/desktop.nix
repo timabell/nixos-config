@@ -31,31 +31,28 @@
   programs.zsh.enable = true;
 
   environment.systemPackages = with pkgs; [
-    # desktop applications
+    audacity
+    cheese
+    dia
+    digikam
     firefox
+    gimp
+    inkscape
+    kdePackages.okular
     keepassxc
     libreoffice
-    kdePackages.okular
-    pdfarranger
-    gimp
-    dia
     meld
-    remmina
-    zeal
-    digikam
     obs-studio
-    audacity
-    vlc
-    cheese
-    inkscape
+    parcellite
+    pavucontrol
+    pdfarranger
+    remmina
+    screenkey
     signal-desktop
     slack
     telegram-desktop
-
-    # desktop utilities
-    parcellite
+    vlc
     xclip
-    pavucontrol
-    screenkey
+    zeal
   ];
 }

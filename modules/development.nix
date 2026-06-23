@@ -5,64 +5,39 @@
   virtualisation.docker.enable = true;
 
   environment.systemPackages = with pkgs; [
-    # containers
-    lazydocker # go docker TUI
-
-    # cloud
-    azure-cli # Azure CLI (az)
-
-    # version control
-    gitFull # includes gitk and git-gui
-    tig
-    gitui
-    gh
+    asciinema
+    azure-cli
+    bubblewrap
+    curl
     delta
-    gitopolis
-
-    # editors
-    vim
-    neovim
-
-    # shell and terminal
-    zsh
-    zellij
-    ghostty
+    dos2unix
     fzf
-
-    # build tools
     gcc
+    gh
+    ghostty
+    gitFull
+    gitopolis
+    gitui
     gnumake
-    pkg-config
+    hashdeep
+    jq
+    kdiff3
+    lazydocker
+    neovim
     openssl
-
-    # languages and runtimes — managed via per-project nix flakes / direnv,
-    # not a global tool-version manager.
-
-    # search
-    silver-searcher
+    pkg-config
+    pv
     ripgrep
-
-    # data
+    schema-explorer
+    silver-searcher
+    sloccount
     sqlite
     sqlitebrowser
-    schema-explorer # SQL schema browser web app (binary: schemaexplorer)
-    jq
-
-    # utilities
-    curl
-    wget
+    tig
     tree
-    pv
-    dos2unix
-    asciinema
-    sloccount
-    hashdeep
-
-    # diff and merge
-    kdiff3
-
-    # per-process sandbox (used for risky commands / LLM agents — see
-    # security-boundaries.md). Pairs with timabell/sandbox.
-    bubblewrap
+    vim
+    wget
+    zellij
+    zsh
   ];
 }
