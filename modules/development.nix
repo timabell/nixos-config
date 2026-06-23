@@ -23,6 +23,7 @@
     jq
     kdiff3
     lazydocker
+    lnav
     neovim
     openssl
     pkg-config
