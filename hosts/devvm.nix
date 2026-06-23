@@ -63,6 +63,38 @@
     libxml2
     libuuid
     glib
+    nss
+    nspr
+    atk
+    at-spi2-atk
+    at-spi2-core
+    cups
+    dbus
+    expat
+    libdrm
+    libgbm
+    libxkbcommon
+    mesa
+    pango
+    cairo
+    gdk-pixbuf
+    gtk3
+    alsa-lib
+    freetype
+    fontconfig
+    xorg.libX11
+    xorg.libXcomposite
+    xorg.libXcursor
+    xorg.libXdamage
+    xorg.libXext
+    xorg.libXfixes
+    xorg.libXi
+    xorg.libXrandr
+    xorg.libXrender
+    xorg.libXScrnSaver
+    xorg.libXtst
+    xorg.libxcb
+    xorg.libxshmfence
   ];
 
   # Public CA bundle for system clients (curl, mise's dotnet-install.sh,
