@@ -157,7 +157,7 @@
         modules = [
           { nixpkgs.overlays = [ gitopolisOverlay lazydockerProfilesOverlay schemaExplorerOverlay ]; }
           disko.nixosModules.disko
-          ./disko/x15.nix
+          ./disko/common.nix
           ./hosts/x15.nix
           ./modules/common.nix
           nixos-hardware.nixosModules.dell-xps-15-9530
