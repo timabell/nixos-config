@@ -16,8 +16,8 @@
   outputs = { self, nixpkgs, nixpkgs-unstable, disko, nixos-hardware, home-manager, gitopolis, ... }:
     let
       # Gitopolis isn't in nixpkgs; pull it from its own flake and expose
-      # as `pkgs.gitopolis` so modules/development.nix can list it
-      # alongside everything else.
+      # as `pkgs.gitopolis` so modules/cli.nix can list it alongside
+      # everything else.
       gitopolisOverlay = final: prev: {
         gitopolis = gitopolis.packages.${final.system}.default;
       };

@@ -7,7 +7,7 @@ Isolates development work exposed to supply-chain attacks from host data.
 See also the more granular [bubblewrap sandbox](https://github.com/timabell/sandbox) for isolating individual processes more tightly (such as preventing LLM Agents looking where they shouldn't).
 
 - XFCE desktop (lightweight)
-- JetBrains Toolbox, VS Code, the dev tools from `modules/development.nix`
+- JetBrains Toolbox, VS Code, the dev tools from `modules/dev-tooling.nix`
 - SPICE: bidirectional clipboard, display auto-resize
 - Optional: virtiofs share from host (mounted ad-hoc inside the VM, not baked into the config)
 - No GPG keys in the VM. Signing is host-only.
