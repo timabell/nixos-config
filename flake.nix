@@ -156,6 +156,8 @@
           disko.nixosModules.disko
           ./disko/x15.nix
           ./hosts/x15.nix
+          ./modules/base.nix
+          ./modules/user.nix
           ./modules/desktop.nix
           ./modules/development.nix
           ./modules/networking.nix

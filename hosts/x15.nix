@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 
 {
   networking.hostName = "x15";
@@ -12,23 +12,6 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  # wifi (Killer 1535 / ath10k)
-  hardware.firmware = [ pkgs.linux-firmware ];
-
-  time.timeZone = "Europe/London";
-  i18n.defaultLocale = "en_GB.UTF-8";
-
-  users.users.tim = {
-    isNormalUser = true;
-    description = "tim";
-    extraGroups = [ "wheel" "networkmanager" "audio" "docker" ];
-    shell = pkgs.zsh;
-    initialPassword = "changeme";
-  };
-
   swapDevices = [
     {
       device = "/swap/swapfile";
@@ -36,11 +19,6 @@
     }
   ];
 
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (pkgs.lib.getName pkg) [
-      "slack"
-    ];
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
+  # First install was on 25.05; never change this for an existing machine.
   system.stateVersion = "25.05";
 }
