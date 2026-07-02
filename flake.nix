@@ -170,6 +170,24 @@
         ];
       };
 
+      nixosConfigurations.cog = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          { nixpkgs.overlays = [ gitopolisOverlay lazydockerProfilesOverlay schemaExplorerOverlay ]; }
+          disko.nixosModules.disko
+          ./disko/common.nix
+          ./hosts/cog.nix
+          ./modules/common.nix
+          nixos-hardware.nixosModules.framework-16-amd-ai-300-series
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.tim = import ./home/tim.nix;
+          }
+        ];
+      };
+
       # Bare-bones bootable image. Build this first — small closure, fast
       # cptofs. Boot it, then in-place switch to the full devvm config.
       nixosConfigurations.devvm-base = nixpkgs.lib.nixosSystem {
