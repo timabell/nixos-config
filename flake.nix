@@ -159,14 +159,7 @@
           disko.nixosModules.disko
           ./disko/x15.nix
           ./hosts/x15.nix
-          ./modules/base.nix
-          ./modules/user.nix
-          ./modules/cli.nix
-          ./modules/containers.nix
-          # ./modules/python.nix  # EXPERIMENT: can bare metal live without python? (VM keeps it)
-          ./modules/desktop.nix
-          ./modules/networking.nix
-          ./modules/hardware.nix
+          ./modules/common.nix
           nixos-hardware.nixosModules.dell-xps-15-9530
           home-manager.nixosModules.home-manager
           {
