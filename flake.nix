@@ -134,7 +134,10 @@
       devvmModules = [
         { nixpkgs.overlays = [ unstableOverlay gitopolisOverlay lazydockerProfilesOverlay beadsTuiOverlay schemaExplorerOverlay ]; }
         ./hosts/devvm.nix
-        ./modules/development.nix
+        ./modules/cli.nix
+        ./modules/containers.nix
+        ./modules/dev-tooling.nix
+        ./modules/python.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
@@ -158,8 +161,10 @@
           ./hosts/x15.nix
           ./modules/base.nix
           ./modules/user.nix
+          ./modules/cli.nix
+          ./modules/containers.nix
+          # ./modules/python.nix  # EXPERIMENT: can bare metal live without python? (VM keeps it)
           ./modules/desktop.nix
-          ./modules/development.nix
           ./modules/networking.nix
           ./modules/hardware.nix
           nixos-hardware.nixosModules.dell-xps-15-9530
