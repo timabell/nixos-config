@@ -10,19 +10,74 @@ Also available as a variation for an [isolated development vm](dev-vm.md) to mit
 See [security-boundaries.md](security-boundaries.md) for the threat model and
 host / VM / bubblewrap layering this is built around.
 
+## Hosts
+
+Every host shares one base: LUKS + btrfs (`disko/common.nix`) and the
+common module set in `modules/common.nix` (base system, user, CLI
+tooling, containers, desktop, networking, hardware). All hosts run a
+desktop — there are no headless servers. A host's own file under
+`hosts/` carries only its hardware specifics (kernel modules, swap,
+`stateVersion`).
+
+Reusing this config? The default user is defined in one place —
+`modules/user.nix` — change `tim` there.
+
+### Development is sandboxed in the dev VM
+
+All development work happens in the [dev VM](dev-vm.md), never on a
+bare-metal host — no npm/dotnet/cargo builds on the primary machines
+(supply-chain risk). The dev toolchain lives in `modules/dev-tooling.nix`
+and is imported only by the VM. Bare-metal hosts get CLI tooling
+(`modules/cli.nix`) and Docker (`modules/containers.nix`), but no
+language build toolchains.
+
 ## Installing from live USB
+
+### cog (Framework 16): disable Secure Boot first
+
+NixOS's systemd-boot is unsigned, so it won't boot — installer *or*
+installed system — with Secure Boot on ("EFI ... boot failed"). On the
+AMD Ryzen AI 300 firmware the toggle is **not** in the F2 setup menu.
+Reach it via the OS "UEFI Settings" / "reboot into firmware" entry (e.g.
+from a booted Linux's boot menu), then disable Secure Boot there.
+
+The Framework's firmware also won't boot the NixOS ISO at all, so cog was
+installed from a Mint live USB with disko-install — see
+`install-from-live-mint.sh` and the two-step install below.
+
+References:
+
+- [NixOS on the Framework Laptop 13 - Framework Guides](https://guides.frame.work/Guide/NixOS+on+the+Framework+Laptop+13/400#s4272)
+- [linux-docs/misc/secure-boot.md at main · FrameworkComputer/linux-docs](https://github.com/FrameworkComputer/linux-docs/blob/main/misc/secure-boot.md#secure-boot-explained)
+- [Framework Laptop 16 - Official NixOS Wiki](https://wiki.nixos.org/wiki/Hardware/Framework/Laptop_16)
+- [NixOS on the Framework Laptop 16 - Framework Laptop 16 / Linux - Framework Community](https://community.frame.work/t/nixos-on-the-framework-laptop-16/46743)
+- [NixOS on the Framework Laptop 16 - Framework Guides](https://guides.frame.work/Guide/NixOS+on+the+Framework+Laptop+16/401#s2211)
+- [Unable to Enable Secure Boot in BIOS (Can't Find the Setting, Need Help!) - Community Support - Framework Community](https://community.frame.work/t/unable-to-enable-secure-boot-in-bios-cant-find-the-setting-need-help/70335)
+
+### Get the NixOS live USB
+
+Download a NixOS ISO from <https://nixos.org/download/> — either the
+Graphical or the Minimal installer image works (these instructions only
+need a shell). Write it to a USB stick, replacing `/dev/sdX` with your
+USB device — check with `lsblk` first, as picking the wrong device will
+wipe that disk:
+
+```sh
+sudo dd if=nixos-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
+```
 
 ### Boot the NixOS live USB
 
-The XPS 15 NVMe drive is not visible to the default NixOS live environment.
-At the GRUB boot menu, press `e` to edit the boot entry and add these kernel
-parameters to the `linux` line:
+**x15 only:** the XPS 15 NVMe drive is not visible to the default NixOS
+live environment. At the GRUB boot menu, press `e` to edit the boot entry
+and add these kernel parameters to the `linux` line:
 
 ```
 nvme_core.default_ps_max_latency_us=0 pcie_aspm=off
 ```
 
-Without these, the installer will not see `/dev/nvme0n1`.
+Without these, the installer will not see `/dev/nvme0n1`. On `cog`
+this isn't needed — boot the live USB normally.
 
 ### Connect to the network
 
@@ -46,16 +101,29 @@ nix-shell -p git --run \
 destroyed. Make sure you have backups and have specified the correct device.**
 
 This partitions, formats, and installs NixOS in one step. Replace
-`/dev/nvme0n1` if your drive path differs:
+`<host>` with `x15` or `cog`, and `/dev/nvme0n1` if your drive path
+differs:
 
 ```sh
 sudo nix --extra-experimental-features 'nix-command flakes' \
   run 'github:nix-community/disko/latest#disko-install' -- \
-  --flake '.#xps15' \
+  --flake '.#<host>' \
   --disk main /dev/nvme0n1
 ```
 
 You will be prompted for a LUKS passphrase.
+
+### Two-step install
+
+If the full closure won't fit the live USB's RAM (or the ISO won't boot
+and you're installing from another live distro), install the minimal
+`<host>-base` first, boot it, then switch to the full config:
+
+```sh
+./install-from-live-mint.sh cog-base /dev/nvme0n1
+# reboot, get online, then:
+sudo nixos-rebuild switch --flake .#cog
+```
 
 ### Reboot
 
@@ -121,7 +189,7 @@ Edit the nix files then rebuild and switch:
 
 ```sh
 cd ~/repo/nixos-config
-sudo nixos-rebuild switch --flake .#xps15
+sudo nixos-rebuild switch --flake .#"$(hostname)"
 ```
 
 This doesn't reboot. It restarts/reloads only the services that changed

@@ -168,20 +168,10 @@
   # fonts
   fonts.packages = with pkgs; [ jetbrains-mono ];
 
-  # allow IDEs that aren't free-licensed
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (pkgs.lib.getName pkg) [
-      "rider"
-      "webstorm"
-      "vscode"
-    ];
-
+  # The development toolchain (IDEs, node, mise, Gas City prereqs, etc.)
+  # lives in modules/dev-tooling.nix — imported by the devvm only. This
+  # host file keeps just the VM's own desktop apps and cert plumbing.
   environment.systemPackages = with pkgs; [
-    # IDEs
-    jetbrains.rider
-    jetbrains.webstorm
-    vscode
-
     # browser (for docs/auth flows inside the VM)
     firefox
 
@@ -197,46 +187,5 @@
     # is fine. Pulled from nssTools — the small split package — to
     # avoid dragging in the full nss library set.
     nssTools
-
-    # node + npm. VM-only — not in modules/development.nix because npm
-    # is not safe to run on primary hosts. Per-project versions via a
-    # flake.nix + direnv inside individual repos.
-    nodejs_24
-
-    # direnv + nix-direnv: per-project dev shells via flake.nix +
-    # `.envrc` containing `use flake`. VM-only because auto-loading
-    # repo-local config (even with `direnv allow`) is one more
-    # supply-chain edge we don't want on the primary host.
-    direnv
-    nix-direnv
-
-    # mise — per-project runtime version manager. Hybrid model: nix
-    # provides system-level node/npm/claude/etc., mise provides
-    # exact-version-match for client repos with a .tool-versions or
-    # .nvmrc. VM-only for supply-chain reasons; mise pulls upstream
-    # prebuilts and we don't want those touching the host.
-    mise
-    python3       # required by some mise plugins
-    pipx          # isolated-venv installer for Python CLIs
-    beads-tui     # `bdt` — TUI for the bd issue tracker (overlay in flake.nix)
-
-    # Anthropic's Claude Code CLI. VM-only — agents run inside the VM,
-    # never on the host. Pulled from unstable via overlay in flake.nix
-    # so we get current releases (claude-code updates weekly).
-    claude-code
-
-    # .env password manager https://github.com/gopasspw/gopass
-    gopass
-
-    # Gas City prerequisites — https://github.com/gastownhall/gascity
-    # (docs/getting-started/installation.md#prerequisites). VM-only:
-    # Gas City and its agents run inside the VM. The remaining prereqs
-    # are already covered — jq, git and gnumake come from
-    # modules/development.nix, and flock ships in util-linux, which is
-    # in NixOS's default system packages.
-    tmux
-    dolt    # 1.86.2+ required; pinned to unstable via flake.nix overlay
-    beads   # the `bd` CLI; unstable-only, see flake.nix overlay
-    go      # source builds of Gas City (1.25+)
   ];
 }

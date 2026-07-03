@@ -28,7 +28,11 @@
     pulse.enable = true;
   };
 
-  programs.zsh.enable = true;
+  # slack is the only unfree desktop app; keep the allow next to it
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (pkgs.lib.getName pkg) [
+      "slack"
+    ];
 
   environment.systemPackages = with pkgs; [
     audacity

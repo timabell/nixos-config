@@ -1,3 +1,6 @@
+# Shared fleet disk layout: GPT + ESP + LUKS + btrfs subvolumes. Every
+# host uses this identical layout; the target device is passed to
+# disko-install on the command line at install time.
 {
   disko.devices = {
     disk.main = {

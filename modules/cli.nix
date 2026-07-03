@@ -1,32 +1,30 @@
 { pkgs, ... }:
 
-{
-  # docker
-  virtualisation.docker.enable = true;
+# Terminal / CLI tooling wanted on every nix machine — bare metal and the
+# dev VM alike. This is the "safe enough for anywhere" surface: shell
+# tooling plus a handful of self-contained utilities. Language build
+# toolchains and package managers deliberately live in dev-tooling.nix
+# (VM only), never here.
 
+{
   environment.systemPackages = with pkgs; [
     asciinema
-    azure-cli
     bubblewrap
     curl
     delta
     dos2unix
     fzf
-    gcc
     gh
     ghostty
     gitFull
     gitopolis
     gitui
-    gnumake
     hashdeep
     jq
     kdiff3
     lazydocker
-    lnav
     neovim
     openssl
-    pkg-config
     pv
     ripgrep
     schema-explorer
