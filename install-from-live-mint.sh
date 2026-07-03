@@ -36,10 +36,16 @@ fi
 
 # 1. Nix — install it if the live environment doesn't already have it. The
 #    daemon install lives under /nix and vanishes when the live USB reboots.
+#    Determinate Systems installer with --no-confirm: non-interactive (the
+#    upstream installer stops to ask about sudo, prior installs, etc.) and
+#    flakes are on by default. The flavour doesn't matter — it's ephemeral
+#    and the installed host is pure NixOS regardless.
 if ! command -v nix >/dev/null 2>&1; then
   echo "==> Installing Nix (ephemeral: gone when the live USB reboots)"
-  sh <(curl -L https://nixos.org/nix/install) --daemon
-  # Make nix available in THIS shell without opening a new one.
+  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
+    | sh -s -- install --no-confirm
+  # Make nix available in THIS shell without opening a new one (the
+  # installer otherwise tells you to restart your shell first).
   for profile in \
     /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh \
     "$HOME/.nix-profile/etc/profile.d/nix.sh"; do
