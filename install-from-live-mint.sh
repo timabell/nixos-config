@@ -9,6 +9,7 @@
 # lives under /nix and is gone when the live USB reboots.
 #
 # Run it from a checkout of THIS repo, on the branch that defines the host:
+#   sudo apt update && sudo apt install git
 #   git clone https://github.com/timabell/nixos-config.git
 #   cd nixos-config
 #   ./install-from-live-mint.sh cog /dev/nvme0n1
