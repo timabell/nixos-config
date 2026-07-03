@@ -70,8 +70,15 @@ fi
 # 3. Partition + install straight onto the internal disk. `.#$HOST` reads
 #    the flake in the current directory, so make sure the branch that
 #    defines $HOST is checked out here.
+#
+#    Wrapped in `nix shell nixpkgs#util-linux` because disko-install's
+#    generated script calls `mount` with a PATH that doesn't include
+#    util-linux on a non-NixOS host, so it fails with "mount: command not
+#    found". Bringing util-linux into the environment fixes that.
 echo "==> Running disko-install for .#$HOST on $DISK"
 sudo "$NIX" --extra-experimental-features 'nix-command flakes' \
+  shell nixpkgs#util-linux --command \
+  "$NIX" --extra-experimental-features 'nix-command flakes' \
   run 'github:nix-community/disko/latest#disko-install' -- \
   --flake ".#$HOST" \
   --disk main "$DISK"
