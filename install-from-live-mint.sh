@@ -72,11 +72,17 @@ fi
 #    defines $HOST is checked out here.
 #
 #    nixos-install (which disko-install invokes) calls `mount`/`umount`
-#    but doesn't put them on PATH, so on a non-NixOS host it dies with
-#    "mount: command not found" at "Setting up /etc" (nixpkgs#220211,
-#    disko#1242). Force the host's util-linux dirs onto PATH through sudo.
+#    without putting them on PATH. The failing call runs AFTER
+#    nixos-install chroots into the target, so the host's /usr/bin/mount
+#    is out of reach — but env vars propagate into the chroot, where
+#    /nix/var/nix/profiles/system/sw/bin resolves to the target's own
+#    util-linux. Put that first; host dirs cover the pre-chroot calls.
+#    https://github.com/NixOS/nixpkgs/issues/220211
+#    https://github.com/nix-community/disko/issues/1242
+#    https://discourse.nixos.org/t/nixos-install-mount-command-not-found/59197/10
+#    https://github.com/viluon/nixos/blob/92f1a9dac6ce62b357ee33552ea6fd4bbe1eea9c/README.md#panic-at-the-disko
 echo "==> Running disko-install for .#$HOST on $DISK"
-sudo env PATH="/usr/sbin:/sbin:/usr/bin:/bin:$PATH" \
+sudo env PATH="/nix/var/nix/profiles/system/sw/bin:/usr/sbin:/sbin:/usr/bin:/bin:$PATH" \
   "$NIX" --extra-experimental-features 'nix-command flakes' \
   run 'github:nix-community/disko/latest#disko-install' -- \
   --flake ".#$HOST" \
