@@ -71,13 +71,12 @@ fi
 #    the flake in the current directory, so make sure the branch that
 #    defines $HOST is checked out here.
 #
-#    Wrapped in `nix shell nixpkgs#util-linux` because disko-install's
-#    generated script calls `mount` with a PATH that doesn't include
-#    util-linux on a non-NixOS host, so it fails with "mount: command not
-#    found". Bringing util-linux into the environment fixes that.
+#    nixos-install (which disko-install invokes) calls `mount`/`umount`
+#    but doesn't put them on PATH, so on a non-NixOS host it dies with
+#    "mount: command not found" at "Setting up /etc" (nixpkgs#220211,
+#    disko#1242). Force the host's util-linux dirs onto PATH through sudo.
 echo "==> Running disko-install for .#$HOST on $DISK"
-sudo "$NIX" --extra-experimental-features 'nix-command flakes' \
-  shell nixpkgs#util-linux --command \
+sudo env PATH="/usr/sbin:/sbin:/usr/bin:/bin:$PATH" \
   "$NIX" --extra-experimental-features 'nix-command flakes' \
   run 'github:nix-community/disko/latest#disko-install' -- \
   --flake ".#$HOST" \
