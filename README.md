@@ -33,6 +33,18 @@ language build toolchains.
 
 ## Installing from live USB
 
+### Get the NixOS live USB
+
+Download a NixOS ISO from <https://nixos.org/download/> — either the
+Graphical or the Minimal installer image works (these instructions only
+need a shell). Write it to a USB stick, replacing `/dev/sdX` with your
+USB device — check with `lsblk` first, as picking the wrong device will
+wipe that disk:
+
+```sh
+sudo dd if=nixos-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
+```
+
 ### Boot the NixOS live USB
 
 **x15 only:** the XPS 15 NVMe drive is not visible to the default NixOS
