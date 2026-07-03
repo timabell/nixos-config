@@ -47,7 +47,6 @@
     libreoffice
     meld
     obs-studio
-    parcellite
     pavucontrol
     pdfarranger
     remmina
