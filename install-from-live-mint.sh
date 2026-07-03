@@ -28,7 +28,9 @@ HOST="${1:-}"
 DISK="${2:-/dev/nvme0n1}"
 
 if [[ -z $HOST ]]; then
-  echo "usage: $0 <host> [disk]   e.g. $0 cog-base   ([disk] defaults to $DISK)" >&2
+  echo "usage: $0 <host> [disk (default $DISK)]" >&2
+  echo "e.g. $0 cog-base" >&2
+  echo "or $0 cog-base $DISK" >&2
   exit 1
 fi
 
