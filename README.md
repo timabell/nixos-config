@@ -33,6 +33,27 @@ language build toolchains.
 
 ## Installing from live USB
 
+### cog (Framework 16): disable Secure Boot first
+
+NixOS's systemd-boot is unsigned, so it won't boot — installer *or*
+installed system — with Secure Boot on ("EFI ... boot failed"). On the
+AMD Ryzen AI 300 firmware the toggle is **not** in the F2 setup menu.
+Reach it via the OS "UEFI Settings" / "reboot into firmware" entry (e.g.
+from a booted Linux's boot menu), then disable Secure Boot there.
+
+The Framework's firmware also won't boot the NixOS ISO at all, so cog was
+installed from a Mint live USB with disko-install — see
+`install-from-live-mint.sh` and the two-step install below.
+
+References:
+
+- [NixOS on the Framework Laptop 13 - Framework Guides](https://guides.frame.work/Guide/NixOS+on+the+Framework+Laptop+13/400#s4272)
+- [linux-docs/misc/secure-boot.md at main · FrameworkComputer/linux-docs](https://github.com/FrameworkComputer/linux-docs/blob/main/misc/secure-boot.md#secure-boot-explained)
+- [Framework Laptop 16 - Official NixOS Wiki](https://wiki.nixos.org/wiki/Hardware/Framework/Laptop_16)
+- [NixOS on the Framework Laptop 16 - Framework Laptop 16 / Linux - Framework Community](https://community.frame.work/t/nixos-on-the-framework-laptop-16/46743)
+- [NixOS on the Framework Laptop 16 - Framework Guides](https://guides.frame.work/Guide/NixOS+on+the+Framework+Laptop+16/401#s2211)
+- [Unable to Enable Secure Boot in BIOS (Can't Find the Setting, Need Help!) - Community Support - Framework Community](https://community.frame.work/t/unable-to-enable-secure-boot-in-bios-cant-find-the-setting-need-help/70335)
+
 ### Get the NixOS live USB
 
 Download a NixOS ISO from <https://nixos.org/download/> — either the
