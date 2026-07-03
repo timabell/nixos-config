@@ -95,33 +95,24 @@ nix-shell -p git --run \
   && cd nixos-config
 ```
 
-### Install with disko-install
-
-**⚠️ WARNING: This will wipe the entire target disk. All existing data will be
-destroyed. Make sure you have backups and have specified the correct device.**
+### Install with disko
 
 This partitions, formats, and installs NixOS in one step. Replace
 `<host>` with `x15` or `cog`, and `/dev/nvme0n1` if your drive path
 differs:
 
+**⚠️ WARNING: This will wipe the entire target disk. All existing data will be
+destroyed. Make sure you have backups and have specified the correct device.**
+
 ```sh
-sudo nix --extra-experimental-features 'nix-command flakes' \
-  run 'github:nix-community/disko/latest#disko-install' -- \
-  --flake '.#<host>' \
-  --disk main /dev/nvme0n1
+./install-from-live-mint.sh cog-base /dev/nvme0n1
 ```
 
 You will be prompted for a LUKS passphrase.
 
-### Two-step install
-
-If the full closure won't fit the live USB's RAM (or the ISO won't boot
-and you're installing from another live distro), install the minimal
-`<host>-base` first, boot it, then switch to the full config:
+Reboot, get online, then in the installed NixOS:
 
 ```sh
-./install-from-live-mint.sh cog-base /dev/nvme0n1
-# reboot, get online, then:
 sudo nixos-rebuild switch --flake .#cog
 ```
 
