@@ -28,7 +28,7 @@ HOST="${1:-}"
 DISK="${2:-/dev/nvme0n1}"
 
 if [[ -z $HOST ]]; then
-  echo "usage: $0 <host> [disk]   e.g. $0 cog /dev/nvme0n1" >&2
+  echo "usage: $0 <host> [disk]   e.g. $0 cog-base /dev/nvme0n1" >&2
   exit 1
 fi
 
