@@ -12,7 +12,13 @@
 #   sudo apt update && sudo apt install git
 #   git clone https://github.com/timabell/nixos-config.git
 #   cd nixos-config
-#   ./install-from-live-mint.sh cog /dev/nvme0n1
+#   ./install-from-live-mint.sh cog-base /dev/nvme0n1
+#
+# For a full desktop host the closure is too big to realise in a live
+# USB's RAM-backed store, so install the minimal '<host>-base' config here
+# (small), then after booting it run `nixos-rebuild switch --flake .#<host>`
+# to build the full system into the real on-disk store. Pass the plain
+# '<host>' only if its closure is known to fit.
 #
 # WARNING: disko-install ERASES the target disk.
 

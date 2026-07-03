@@ -151,42 +151,53 @@
           home-manager.users.tim = import ./home/tim-devvm.nix;
         }
       ];
-    in {
-      nixosConfigurations.x15 = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          { nixpkgs.overlays = [ gitopolisOverlay lazydockerProfilesOverlay schemaExplorerOverlay ]; }
-          disko.nixosModules.disko
-          ./disko/common.nix
-          ./hosts/x15.nix
-          ./modules/common.nix
-          nixos-hardware.nixosModules.dell-xps-15-9530
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.tim = import ./home/tim.nix;
-          }
-        ];
+
+      # Every bare-metal fleet host yields two configs from one hardware
+      # definition:
+      #   .full — the complete desktop system
+      #   .base — a minimal system for the two-step install. The full
+      #           closure is too big to realise in a live USB's RAM-backed
+      #           store, so install .base (small), boot it, then
+      #           `nixos-rebuild switch` to .full, which builds into the
+      #           real on-disk store. Mirrors the devvm-base -> devvm flow.
+      fleetHost = { hostModule, hwModules ? [] }:
+        let
+          mk = extraModules: nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+              disko.nixosModules.disko
+              ./disko/common.nix
+              hostModule
+            ] ++ hwModules ++ extraModules;
+          };
+        in {
+          full = mk [
+            { nixpkgs.overlays = [ gitopolisOverlay lazydockerProfilesOverlay schemaExplorerOverlay ]; }
+            ./modules/common.nix
+            home-manager.nixosModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.tim = import ./home/tim.nix;
+            }
+          ];
+          base = mk [ ./modules/minimal.nix ];
+        };
+
+      x15Host = fleetHost {
+        hostModule = ./hosts/x15.nix;
+        hwModules = [ nixos-hardware.nixosModules.dell-xps-15-9530 ];
       };
 
-      nixosConfigurations.cog = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          { nixpkgs.overlays = [ gitopolisOverlay lazydockerProfilesOverlay schemaExplorerOverlay ]; }
-          disko.nixosModules.disko
-          ./disko/common.nix
-          ./hosts/cog.nix
-          ./modules/common.nix
-          nixos-hardware.nixosModules.framework-16-amd-ai-300-series
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.tim = import ./home/tim.nix;
-          }
-        ];
+      cogHost = fleetHost {
+        hostModule = ./hosts/cog.nix;
+        hwModules = [ nixos-hardware.nixosModules.framework-16-amd-ai-300-series ];
       };
+    in {
+      nixosConfigurations.x15 = x15Host.full;
+      nixosConfigurations."x15-base" = x15Host.base;
+      nixosConfigurations.cog = cogHost.full;
+      nixosConfigurations."cog-base" = cogHost.base;
 
       # Bare-bones bootable image. Build this first — small closure, fast
       # cptofs. Boot it, then in-place switch to the full devvm config.

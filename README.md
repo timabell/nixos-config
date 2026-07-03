@@ -92,6 +92,18 @@ sudo nix --extra-experimental-features 'nix-command flakes' \
 
 You will be prompted for a LUKS passphrase.
 
+### Two-step install
+
+If the full closure won't fit the live USB's RAM (or the ISO won't boot
+and you're installing from another live distro), install the minimal
+`<host>-base` first, boot it, then switch to the full config:
+
+```sh
+./install-from-live-mint.sh cog-base /dev/nvme0n1
+# reboot, get online, then:
+sudo nixos-rebuild switch --flake .#cog
+```
+
 ### Reboot
 
 ```sh
