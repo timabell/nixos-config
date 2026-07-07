@@ -28,10 +28,11 @@
     pulse.enable = true;
   };
 
-  # slack is the only unfree desktop app; keep the allow next to it
+  # Non-FOSS packages have to be specifically allowed
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (pkgs.lib.getName pkg) [
       "slack"
+      "obsidian"
     ];
 
   programs.thunderbird.enable = true;
@@ -48,6 +49,7 @@
     keepassxc
     libreoffice
     meld
+    obsidian
     obs-studio
     pavucontrol
     pdfarranger
