@@ -53,6 +53,7 @@
     pdfarranger
     remmina
     screenkey
+    shutter
     signal-desktop
     slack
     telegram-desktop
