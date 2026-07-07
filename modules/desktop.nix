@@ -34,6 +34,8 @@
       "slack"
     ];
 
+  programs.thunderbird.enable = true;
+
   environment.systemPackages = with pkgs; [
     audacity
     cheese
