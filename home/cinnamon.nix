@@ -46,7 +46,6 @@ in
         "panel1:right:8:sound@cinnamon.org:11"
         "panel1:right:9:power@cinnamon.org:12"
         "panel1:right:10:calendar@cinnamon.org:${calendarInstanceId}"
-        "panel1:right:11:cornerbar@cinnamon.org:14"
       ];
       next-applet-id = 15;
     };
