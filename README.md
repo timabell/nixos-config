@@ -31,6 +31,27 @@ and is imported only by the VM. Bare-metal hosts get CLI tooling
 (`modules/cli.nix`) and Docker (`modules/containers.nix`), but no
 language build toolchains.
 
+### Running Claude Code in a sandbox
+
+Claude Code is run inside a per-process bubblewrap sandbox — the `sandbox`
+command (`modules/sandbox/`, vendored from
+[timabell/sandbox](https://github.com/timabell/sandbox)). It binds the
+given working tree(s) at `~/work`, keeps outbound network, and persists
+Claude Code's state (`~/.claude`, `~/.claude.json`) in a dedicated host
+directory `~/.local/share/sandboxed-claude` — so login, sessions
+(`--resume`) and config survive across runs, separate from any real
+`~/.claude`:
+
+```sh
+sandbox ~/repo/some-project   # opens a sandboxed shell; then run `claude`
+```
+
+`sandbox` is available on every host, and Claude Code is reachable *inside*
+it everywhere. On bare-metal hosts claude-code is deliberately kept off the
+host PATH (the sandbox injects it), so it can only run sandboxed. The dev
+VM also installs it on the normal PATH (`modules/dev-tooling.nix`), so there
+it works both inside and outside the sandbox.
+
 ## Installing from live USB
 
 ### cog (Framework 16): disable Secure Boot first

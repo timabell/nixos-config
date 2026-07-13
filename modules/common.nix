@@ -15,5 +15,6 @@
     ./desktop.nix
     ./networking.nix
     ./hardware.nix
+    ./sandbox
   ];
 }
