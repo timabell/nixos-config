@@ -178,7 +178,7 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.tim = import ./home/tim.nix;
+              home-manager.users.tim.imports = [ ./home/tim.nix ./home/cinnamon.nix ];
             }
           ];
           base = mk [ ./modules/minimal.nix ];
