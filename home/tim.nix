@@ -1,5 +1,30 @@
 { config, pkgs, lib, ... }:
 
+let
+  # Right-click "copy share link" for nemo. No packaged file-manager
+  # integration exists for Dropbox or Maestral in nixpkgs — the Debian
+  # nemo-dropbox / nautilus-dropbox overlay isn't packaged, and maestral-gui
+  # has no per-file share UI — so wire it by hand: create (or reuse) a
+  # Maestral shared link for the selected file and put it on the clipboard.
+  maestral-sharelink = pkgs.writeShellApplication {
+    name = "maestral-sharelink";
+    runtimeInputs = [ pkgs.maestral pkgs.xclip pkgs.libnotify ];
+    text = ''
+      path="''${1:-}"
+      [ -n "$path" ] || exit 0
+      link=$(maestral sharelink create "$path" 2>/dev/null | grep -oE 'https://[^ ]+' | head -n1 || true)
+      if [ -z "$link" ]; then
+        link=$(maestral sharelink list "$path" 2>/dev/null | grep -oE 'https://[^ ]+' | head -n1 || true)
+      fi
+      if [ -n "$link" ]; then
+        printf '%s' "$link" | xclip -selection clipboard
+        notify-send "Dropbox link copied" "$link"
+      else
+        notify-send "Maestral" "Could not create a share link for $path"
+      fi
+    '';
+  };
+in
 {
   home.username = "tim";
   home.homeDirectory = "/home/tim";
@@ -350,6 +375,39 @@
       brightness-night = "0.8";
     };
   };
+
+  # --- maestral (open-source Dropbox sync daemon) ---
+  #
+  # Hand-rolled because home-manager 25.05 has no services.maestral module
+  # (it ships services.dropbox, but only for the proprietary client).
+  # Maestral's own `maestral autostart` writes an imperative unit outside
+  # git; a declarative user service keeps it reconciled on every rebuild.
+
+  systemd.user.services.maestral = {
+    Unit = {
+      Description = "Maestral Dropbox sync daemon";
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
+    };
+    Service = {
+      Type = "exec";
+      ExecStart = "${pkgs.maestral}/bin/maestral start -f";
+      ExecStop = "${pkgs.maestral}/bin/maestral stop";
+      Restart = "on-failure";
+      Nice = 10;
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
+
+  home.file.".local/share/nemo/actions/maestral-sharelink.nemo_action".text = ''
+    [Nemo Action]
+    Name=Copy Dropbox share link
+    Comment=Create a Maestral shared link and copy it to the clipboard
+    Exec=${maestral-sharelink}/bin/maestral-sharelink %F
+    Selection=s
+    Extensions=any;
+    Icon-Name=emblem-shared
+  '';
 
   # --- packages available to this user ---
 

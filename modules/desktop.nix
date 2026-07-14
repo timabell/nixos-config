@@ -53,6 +53,7 @@
     kdePackages.okular
     keepassxc
     libreoffice
+    maestral
     meld
     obsidian
     obs-studio
