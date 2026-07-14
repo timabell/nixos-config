@@ -93,4 +93,79 @@ in
                ${lib.escapeShellArg calendarSettings}
       fi
     '';
+
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      # web browser + mail
+      "x-scheme-handler/http" = "firefox.desktop";
+      "x-scheme-handler/https" = "firefox.desktop";
+      "x-scheme-handler/mailto" = "thunderbird.desktop";
+
+      # telegram URL schemes
+      "x-scheme-handler/tg" = "org.telegram.desktop.desktop";
+      "x-scheme-handler/tonsite" = "org.telegram.desktop.desktop";
+
+      # images -> xviewer
+      "image/avif" = "xviewer.desktop";
+      "image/bmp" = "xviewer.desktop";
+      "image/gif" = "xviewer.desktop";
+      "image/heif" = "xviewer.desktop";
+      "image/jpeg" = "xviewer.desktop";
+      "image/jpg" = "xviewer.desktop";
+      "image/pjpeg" = "xviewer.desktop";
+      "image/png" = "xviewer.desktop";
+      "image/svg+xml" = "xviewer.desktop";
+      "image/svg+xml-compressed" = "xviewer.desktop";
+      "image/tiff" = "xviewer.desktop";
+      "image/vnd.wap.wbmp" = "xviewer.desktop";
+      "image/webp" = "xviewer.desktop";
+      "image/x-bmp" = "xviewer.desktop";
+      "image/x-gray" = "xviewer.desktop";
+      "image/x-icb" = "xviewer.desktop";
+      "image/x-ico" = "xviewer.desktop";
+      "image/x-pcx" = "xviewer.desktop";
+      "image/x-png" = "xviewer.desktop";
+      "image/x-portable-anymap" = "xviewer.desktop";
+      "image/x-portable-bitmap" = "xviewer.desktop";
+      "image/x-portable-graymap" = "xviewer.desktop";
+      "image/x-portable-pixmap" = "xviewer.desktop";
+      "image/x-xbitmap" = "xviewer.desktop";
+      "image/x-xpixmap" = "xviewer.desktop";
+
+      # documents
+      "application/pdf" = "xreader.desktop";
+      "text/plain" = "org.x.editor.desktop";
+      "text/markdown" = "code.desktop";
+
+      # code / source files -> VS Code
+      "application/javascript" = "code.desktop";
+      "application/x-httpd-php3" = "code.desktop";
+      "application/x-httpd-php4" = "code.desktop";
+      "application/x-httpd-php5" = "code.desktop";
+      "application/x-m4" = "code.desktop";
+      "application/x-php" = "code.desktop";
+      "application/x-ruby" = "code.desktop";
+      "application/x-shellscript" = "code.desktop";
+      "application/xml" = "code.desktop";
+      "text/css" = "code.desktop";
+      "text/turtle" = "code.desktop";
+      "text/x-c++hdr" = "code.desktop";
+      "text/x-c++src" = "code.desktop";
+      "text/x-chdr" = "code.desktop";
+      "text/x-csharp" = "code.desktop";
+      "text/x-csrc" = "code.desktop";
+      "text/x-diff" = "code.desktop";
+      "text/x-dsrc" = "code.desktop";
+      "text/x-fortran" = "code.desktop";
+      "text/x-java" = "code.desktop";
+      "text/x-makefile" = "code.desktop";
+      "text/x-pascal" = "code.desktop";
+      "text/x-perl" = "code.desktop";
+      "text/x-python" = "code.desktop";
+      "text/x-sql" = "code.desktop";
+      "text/x-vb" = "code.desktop";
+      "text/yaml" = "code.desktop";
+    };
+  };
 }
