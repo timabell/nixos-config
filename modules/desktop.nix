@@ -33,6 +33,7 @@
     builtins.elem (pkgs.lib.getName pkg) [
       "slack"
       "obsidian"
+      "vscode"
     ];
 
   programs.thunderbird.enable = true;
@@ -67,6 +68,7 @@
     telegram-desktop
     vlc
     vokoscreen
+    vscode
     x2goclient
     xclip
     zeal
