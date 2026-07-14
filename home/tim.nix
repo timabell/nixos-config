@@ -226,7 +226,6 @@
         algorithm = "patience";
         guitool = "kdiff3";
       };
-      web.browser = "chromium-browser";
       delta = {
         line-numbers = true;
         syntax-theme = "Solarized (light)";
