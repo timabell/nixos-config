@@ -38,13 +38,18 @@
   programs.thunderbird.enable = true;
 
   environment.systemPackages = with pkgs; [
+    android-tools
     audacity
     cheese
+    chromium
+    clamtk
     dia
     digikam
     firefox
     gimp
+    gpx-viewer
     inkscape
+    k4dirstat
     kdePackages.okular
     keepassxc
     libreoffice
@@ -60,6 +65,8 @@
     slack
     telegram-desktop
     vlc
+    vokoscreen
+    x2goclient
     xclip
     zeal
   ];
