@@ -64,7 +64,7 @@ in
     };
 
     "org/cinnamon/settings-daemon/plugins/power" = {
-      button-power = "interactive";
+      button-power = "suspend";
       lid-close-ac-action = "suspend";
       lid-close-battery-action = "suspend";
       sleep-display-ac = 1800;
