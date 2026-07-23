@@ -11,15 +11,23 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     gitopolis.url = "github:timabell/gitopolis/nix";
     gitopolis.inputs.nixpkgs.follows = "nixpkgs";
+    disk-hog-backup.url = "github:timabell/disk-hog-backup/nix";
+    disk-hog-backup.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, disko, nixos-hardware, home-manager, gitopolis, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, disko, nixos-hardware, home-manager, gitopolis, disk-hog-backup, ... }:
     let
       # Gitopolis isn't in nixpkgs; pull it from its own flake and expose
       # as `pkgs.gitopolis` so modules/cli.nix can list it alongside
       # everything else.
       gitopolisOverlay = final: prev: {
         gitopolis = gitopolis.packages.${final.system}.default;
+      };
+      # disk-hog-backup: same deal as gitopolis — not in nixpkgs, pulled from
+      # its own flake input (the `nix` branch wraps the prebuilt musl release
+      # binary) and exposed as `pkgs.disk-hog-backup` for modules/cli.nix.
+      diskHogBackupOverlay = final: prev: {
+        disk-hog-backup = disk-hog-backup.packages.${final.system}.default;
       };
       # Overlay that pulls specific packages from unstable when stable's
       # version is too old. Applied only to the devvm — keep x15 stable.
@@ -157,7 +165,7 @@
       };
 
       devvmModules = [
-        { nixpkgs.overlays = [ unstableOverlay gitopolisOverlay lazydockerProfilesOverlay beadsTuiOverlay schemaExplorerOverlay ]; }
+        { nixpkgs.overlays = [ unstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay beadsTuiOverlay schemaExplorerOverlay ]; }
         ./hosts/devvm.nix
         ./modules/cli.nix
         ./modules/containers.nix
@@ -198,7 +206,7 @@
           };
         in {
           full = mk [
-            { nixpkgs.overlays = [ gitopolisOverlay lazydockerProfilesOverlay schemaExplorerOverlay claudeCodeOverlay ghosttyOverlay ]; }
+            { nixpkgs.overlays = [ gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay schemaExplorerOverlay claudeCodeOverlay ghosttyOverlay ]; }
             ./modules/common.nix
             home-manager.nixosModules.home-manager
             {
