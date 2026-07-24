@@ -178,6 +178,7 @@
     # desktop conveniences
     xclip
     pavucontrol
+    orca
 
     # certutil, used by `dotnet dev-certs https --trust` to register
     # the dev cert in the Firefox/Chromium NSS databases. Without it
