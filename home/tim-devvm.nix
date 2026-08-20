@@ -40,7 +40,11 @@
   # whichever .NET version mise has provisioned for the project.
   programs.zsh.initContent = lib.mkAfter ''
     function _update_dotnet_root() {
-      export DOTNET_ROOT=$(mise where dotnet-core 2>/dev/null)
+      local root
+      root=$(mise where dotnet-core 2>/dev/null)
+      if [ -n "$root" ]; then
+        export DOTNET_ROOT=$root
+      fi
     }
     add-zsh-hook precmd _update_dotnet_root
   '';
