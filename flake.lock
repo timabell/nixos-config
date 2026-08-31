@@ -1,5 +1,26 @@
 {
   "nodes": {
+    "disk-hog-backup": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784842515,
+        "narHash": "sha256-SJrwYetVQmIWmIy4YdL9ryBK62hGSxMVzP8sLGwx/b8=",
+        "owner": "timabell",
+        "repo": "disk-hog-backup",
+        "rev": "01f319e5347fdc7f40890f35461000efd84984ee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "timabell",
+        "ref": "nix",
+        "repo": "disk-hog-backup",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -128,6 +149,7 @@
     },
     "root": {
       "inputs": {
+        "disk-hog-backup": "disk-hog-backup",
         "disko": "disko",
         "gitopolis": "gitopolis",
         "home-manager": "home-manager",

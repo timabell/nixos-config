@@ -12,6 +12,7 @@
     bubblewrap
     curl
     delta
+    disk-hog-backup
     dos2unix
     fzf
     gh
