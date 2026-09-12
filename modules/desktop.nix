@@ -52,6 +52,7 @@
     inkscape
     k4dirstat
     kdePackages.okular
+    kdePackages.kdenlive
     keepassxc
     libreoffice
     maestral
