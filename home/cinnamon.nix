@@ -94,6 +94,7 @@ in
       fi
     '';
 
+  xdg.configFile."mimeapps.list".force = true; # override any manual open-with-app config
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
