@@ -46,5 +46,9 @@
     "deny": [
       "Bash(git push:*)"
     ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "excludedCommands": ["dotnet test *", "mise exec -- dotnet test *"]
   }
 }
