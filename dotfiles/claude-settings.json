@@ -49,6 +49,11 @@
   },
   "sandbox": {
     "enabled": true,
-    "excludedCommands": ["dotnet test *", "mise exec -- dotnet test *"]
+    "excludedCommands": [
+      "dotnet test *",
+      "mise exec -- dotnet test *",
+      "dotnet format *",
+      "mise exec -- dotnet format *"
+    ]
   }
 }
