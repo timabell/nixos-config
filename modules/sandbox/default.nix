@@ -14,9 +14,8 @@
 # the host. So on bare-metal hosts `claude` runs only inside `sandbox`,
 # never bare on the host. The devvm additionally installs claude-code on its
 # PATH (modules/dev-tooling.nix), so there it also works outside the
-# sandbox. claude-code tracks unstable, since it releases weekly: via
-# overlays/claude-code.nix on bare metal, via overlays/devvm-from-unstable.nix
-# on the devvm.
+# sandbox. claude-code tracks unstable, since it releases weekly (see
+# overlays/from-unstable.nix).
 #
 # Imported by modules/bare-metal-hosts.nix (bare metal) and devvmModules (devvm).
 

@@ -17,7 +17,5 @@
   lazydockerProfilesOverlay = import ./lazydocker.nix;
 
   # Newer versions from nixpkgs-unstable.
-  unstableOverlay = import ./devvm-from-unstable.nix { inherit nixpkgs-unstable; };
-  claudeCodeOverlay = import ./claude-code.nix { inherit nixpkgs-unstable; };
-  ghosttyOverlay = import ./ghostty.nix { inherit nixpkgs-unstable; };
+  fromUnstableOverlay = import ./from-unstable.nix { inherit nixpkgs-unstable; };
 }

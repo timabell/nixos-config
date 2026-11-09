@@ -37,7 +37,7 @@
       overlays = import ./overlays { inherit nixpkgs-unstable gitopolis disk-hog-backup; };
 
       devvmModules = [
-        { nixpkgs.overlays = with overlays; [ unstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay beadsTuiOverlay schemaExplorerOverlay ]; }
+        { nixpkgs.overlays = with overlays; [ fromUnstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay beadsTuiOverlay schemaExplorerOverlay ]; }
         ./hosts/devvm.nix
         ./modules/all-hosts.nix
         ./modules/containers.nix
@@ -78,7 +78,7 @@
           };
         in {
           full = mk [
-            { nixpkgs.overlays = with overlays; [ gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay schemaExplorerOverlay claudeCodeOverlay ghosttyOverlay ]; }
+            { nixpkgs.overlays = with overlays; [ fromUnstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay schemaExplorerOverlay ]; }
             ./modules/bare-metal-hosts.nix
             home-manager.nixosModules.home-manager
             {
