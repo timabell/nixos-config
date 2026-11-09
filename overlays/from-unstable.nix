@@ -15,6 +15,9 @@ prev.lib.genAttrs [
   # Gas City prerequisite (the `bd` CLI); not in stable nixpkgs at all.
   "beads"
 
+  # OpenCollection YAML collections need 3.0+; stable has 2.x.
+  "bruno"
+
   # Releases weekly; stable nixpkgs lags badly.
   "claude-code"
 

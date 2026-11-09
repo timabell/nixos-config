@@ -9,6 +9,7 @@
 {
   environment.systemPackages = with pkgs; [
     asciinema
+    bruno
     bubblewrap
     curl
     delta
