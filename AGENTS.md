@@ -45,18 +45,18 @@ store. Same flow for the VM (`devvm-base` image → boot → switch to `devvm`).
 
 **Layering.** Every bare-metal host is built by the `fleetHost` function in
 `flake.nix` from one hardware definition (`hosts/<name>.nix`) plus:
-`disko/common.nix` (LUKS + btrfs) → `modules/common.nix` (the shared base) →
-home-manager (`home/tim.nix` + `home/cinnamon.nix`). `modules/common.nix`
-imports the base/user/cli/containers/desktop/networking/hardware/sandbox
+`disko/common.nix` (LUKS + btrfs) → `modules/bare-metal-hosts.nix` (the shared base) →
+home-manager (`home/tim.nix` + `home/cinnamon.nix`). `modules/bare-metal-hosts.nix`
+imports the base/user/all-hosts/containers/desktop/networking/hardware/sandbox
 modules. A per-host file carries *only* hardware specifics (kernel modules,
 swap, `stateVersion`). All hosts run a desktop — there are no headless servers,
-so desktop lives in the common base.
+so desktop lives in the bare-metal base.
 
 **The dev VM is assembled separately** (`devvmModules` in `flake.nix`, not via
 `fleetHost`). It is the only config that imports `modules/dev-tooling.nix` — the
 language build toolchains (npm/dotnet/cargo/etc.). This is deliberate: **no
 development builds run on bare-metal hosts** (supply-chain risk). Bare-metal
-hosts get CLI tooling (`modules/cli.nix`) and Docker (`modules/containers.nix`)
+hosts get shared tooling (`modules/all-hosts.nix`) and Docker (`modules/containers.nix`)
 but no language toolchains. See `security-boundaries.md` for the full threat
 model, and `dev-vm.md` for VM setup/operation.
 

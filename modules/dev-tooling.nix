@@ -58,7 +58,7 @@
     # Gas City prerequisites — https://github.com/gastownhall/gascity
     # (docs/getting-started/installation.md#prerequisites). VM-only:
     # Gas City and its agents run inside the VM. The remaining prereqs
-    # are already covered — jq and git come from modules/cli.nix,
+    # are already covered — jq and git come from modules/all-hosts.nix,
     # gnumake is above, and flock ships in util-linux, which is in
     # NixOS's default system packages.
     tmux

@@ -13,7 +13,7 @@ host / VM / bubblewrap layering this is built around.
 ## Hosts
 
 Every host shares one base: LUKS + btrfs (`disko/common.nix`) and the
-common module set in `modules/common.nix` (base system, user, CLI
+module set in `modules/bare-metal-hosts.nix` (base system, user, shared
 tooling, containers, desktop, networking, hardware). All hosts run a
 desktop — there are no headless servers. A host's own file under
 `hosts/` carries only its hardware specifics (kernel modules, swap,
@@ -27,8 +27,8 @@ Reusing this config? The default user is defined in one place —
 All development work happens in the [dev VM](dev-vm.md), never on a
 bare-metal host — no npm/dotnet/cargo builds on the primary machines
 (supply-chain risk). The dev toolchain lives in `modules/dev-tooling.nix`
-and is imported only by the VM. Bare-metal hosts get CLI tooling
-(`modules/cli.nix`) and Docker (`modules/containers.nix`), but no
+and is imported only by the VM. Bare-metal hosts get shared tooling
+(`modules/all-hosts.nix`) and Docker (`modules/containers.nix`), but no
 language build toolchains.
 
 ### Running Claude Code in a sandbox

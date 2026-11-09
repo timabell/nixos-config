@@ -18,7 +18,7 @@
 # claudeCodeOverlay in flake.nix on bare metal, via unstableOverlay on the
 # devvm.
 #
-# Imported by modules/common.nix (bare metal) and devvmModules (devvm).
+# Imported by modules/bare-metal-hosts.nix (bare metal) and devvmModules (devvm).
 
 let
   sandbox = pkgs.writeShellApplication {

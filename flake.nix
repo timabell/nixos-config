@@ -18,14 +18,14 @@
   outputs = { self, nixpkgs, nixpkgs-unstable, disko, nixos-hardware, home-manager, gitopolis, disk-hog-backup, ... }:
     let
       # Gitopolis isn't in nixpkgs; pull it from its own flake and expose
-      # as `pkgs.gitopolis` so modules/cli.nix can list it alongside
+      # as `pkgs.gitopolis` so modules/all-hosts.nix can list it alongside
       # everything else.
       gitopolisOverlay = final: prev: {
         gitopolis = gitopolis.packages.${final.system}.default;
       };
       # disk-hog-backup: same deal as gitopolis — not in nixpkgs, pulled from
       # its own flake input (the `nix` branch wraps the prebuilt musl release
-      # binary) and exposed as `pkgs.disk-hog-backup` for modules/cli.nix.
+      # binary) and exposed as `pkgs.disk-hog-backup` for modules/all-hosts.nix.
       diskHogBackupOverlay = final: prev: {
         disk-hog-backup = disk-hog-backup.packages.${final.system}.default;
       };
@@ -167,7 +167,7 @@
       devvmModules = [
         { nixpkgs.overlays = [ unstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay beadsTuiOverlay schemaExplorerOverlay ]; }
         ./hosts/devvm.nix
-        ./modules/cli.nix
+        ./modules/all-hosts.nix
         ./modules/containers.nix
         ./modules/dev-tooling.nix
         ./modules/python.nix
@@ -207,7 +207,7 @@
         in {
           full = mk [
             { nixpkgs.overlays = [ gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay schemaExplorerOverlay claudeCodeOverlay ghosttyOverlay ]; }
-            ./modules/common.nix
+            ./modules/bare-metal-hosts.nix
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
