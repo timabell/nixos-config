@@ -45,10 +45,10 @@
     # mise plugins) comes from modules/python.nix.
     mise
     pipx          # isolated-venv installer for Python CLIs
-    beads-tui     # `bdt` — TUI for the bd issue tracker (overlay in flake.nix)
+    beads-tui     # `bdt` — TUI for the bd issue tracker (overlays/beads-tui.nix)
 
     # Anthropic's Claude Code CLI. VM-only — agents run inside the VM,
-    # never on the host. Pulled from unstable via overlay in flake.nix
+    # never on the host. Pulled from unstable via overlays/devvm-from-unstable.nix
     # so we get current releases (claude-code updates weekly).
     claude-code
 
@@ -62,8 +62,8 @@
     # gnumake is above, and flock ships in util-linux, which is in
     # NixOS's default system packages.
     tmux
-    dolt    # 1.86.2+ required; pinned to unstable via flake.nix overlay
-    beads   # the `bd` CLI; unstable-only, see flake.nix overlay
+    dolt    # 1.86.2+ required; pinned to unstable via overlays/devvm-from-unstable.nix
+    beads   # the `bd` CLI; unstable-only, see overlays/devvm-from-unstable.nix
     go      # source builds of Gas City (1.25+)
   ];
 }

@@ -1,3 +1,20 @@
+# Machines this flake builds (`nixosConfigurations.<name>`):
+#
+#   x15, cog            Bare-metal laptops. Built by `fleetHost` below from
+#                       hosts/<name>.nix (hardware only) plus
+#                       modules/bare-metal-hosts.nix and home/tim.nix.
+#   x15-base, cog-base  Minimal installs of the same laptops, the first
+#                       step of the two-step install (see `fleetHost`).
+#   devvm               The development VM, the only machine with language
+#                       toolchains. Built from `devvmModules` below:
+#                       hosts/devvm.nix plus the shared and VM-only modules
+#                       and home/tim-devvm.nix.
+#   devvm-base          Minimal VM image, the first step of the devvm build.
+#
+# Packages wanted on every machine are listed in modules/all-hosts.nix. The
+# overlays each machine uses are listed next to its modules below and
+# defined in overlays/.
+
 {
   description = "Tim's NixOS config";
 
@@ -17,155 +34,10 @@
 
   outputs = { self, nixpkgs, nixpkgs-unstable, disko, nixos-hardware, home-manager, gitopolis, disk-hog-backup, ... }:
     let
-      # Gitopolis isn't in nixpkgs; pull it from its own flake and expose
-      # as `pkgs.gitopolis` so modules/all-hosts.nix can list it alongside
-      # everything else.
-      gitopolisOverlay = final: prev: {
-        gitopolis = gitopolis.packages.${final.system}.default;
-      };
-      # disk-hog-backup: same deal as gitopolis — not in nixpkgs, pulled from
-      # its own flake input (the `nix` branch wraps the prebuilt musl release
-      # binary) and exposed as `pkgs.disk-hog-backup` for modules/all-hosts.nix.
-      diskHogBackupOverlay = final: prev: {
-        disk-hog-backup = disk-hog-backup.packages.${final.system}.default;
-      };
-      # Overlay that pulls specific packages from unstable when stable's
-      # version is too old. Applied only to the devvm — keep x15 stable.
-      unstableOverlay = final: prev:
-        let
-          unstable = import nixpkgs-unstable {
-            inherit (final) system;
-            config.allowUnfree = true;
-          };
-        in {
-          # mise 2025.5.3 (stable) compiles node from source on nixos (slow) instead of using the pre-built binaries
-          mise = unstable.mise;
-          # claude-code releases weekly; stable nixpkgs lags.
-          claude-code = unstable.claude-code;
-          # JetBrains IDEs ship quarterly; stable nixpkgs pins an old
-          # minor. Pull the whole jetbrains set from unstable so any
-          # IDE added in devvm.nix gets the current release.
-          jetbrains = unstable.jetbrains;
-          # Gas City prerequisites. Stable's dolt is 1.52.3; Gas City's
-          # managed Dolt checks reject anything below 1.86.2, which is
-          # exactly what unstable ships. beads (the `bd` CLI) isn't in
-          # stable nixpkgs at all — unstable has 1.0.3.
-          dolt = unstable.dolt;
-          beads = unstable.beads;
-        };
-
-      # Upstream lazydocker doesn't understand docker-compose profiles
-      # (https://github.com/jesseduffield/lazydocker/issues/423). Pulled from
-      # timabell/lazydocker @ feat/docker-compose-profiles, a from-scratch
-      # implementation on top of master (see that repo's
-      # docs/adr/0001-docker-compose-profile-support.md). Upstream
-      # vendorHash is null (deps are vendored), so overriding src is enough.
-      lazydockerProfilesOverlay = final: prev: {
-        lazydocker = prev.lazydocker.overrideAttrs (_: {
-          src = prev.fetchFromGitHub {
-            owner = "timabell";
-            repo = "lazydocker";
-            rev = "1f035a8d6d318c84e8d7ec47cb3d9ba3a1b5f961";
-            hash = "sha256-gxxNYclOc7KvZwt54Y0S4sUjq3xNxzuZdtRkmzTgWuk=";
-          };
-        });
-      };
-
-      # schema-explorer — Go web app for browsing SQL database schemas.
-      # Not in nixpkgs. Build from source with buildGoModule. The binary
-      # loads `templates/`, `static/`, `config/` from CWD or, failing
-      # that, from the directory containing the executable
-      # (resources/resources.go uses os.Executable()), so we install the
-      # real binary into share/ alongside those dirs and wrap it in bin/.
-      # To bump: change `rev` to a new tag/commit, set `hash` and
-      # `vendorHash` to lib.fakeHash, rebuild, then paste the hashes
-      # nix prints back in.
-      schemaExplorerOverlay = final: prev: {
-        schema-explorer = prev.buildGoModule rec {
-          pname = "schema-explorer";
-          version = "0.70";
-          src = prev.fetchFromGitHub {
-            owner = "timabell";
-            repo = "schema-explorer";
-            rev = "v${version}";
-            hash = "sha256-ulNrz0nPQatxWP2wXULmR8g2bX4YHHxWkS5ioNN99J8=";
-          };
-          vendorHash = "sha256-9ygMN9LaaQ/DmlSYKkWNy16G71zv/QgduAA8TzbeBVs=";
-          subPackages = [ "." ];
-          # Upstream tests instantiate a DB driver and panic without one
-          # (sse_test.go → reader.GetDbReader → "driver option missing").
-          # Skip tests in the package build; this matches build.sh, which
-          # only runs `go build`.
-          doCheck = false;
-          ldflags = [
-            "-X github.com/timabell/schema-explorer/about.gitVersion=v${version}"
-          ];
-          nativeBuildInputs = [ prev.makeWrapper ];
-          postInstall = ''
-            mkdir -p $out/share/schema-explorer
-            mv $out/bin/schema-explorer $out/share/schema-explorer/schemaexplorer
-            cp -r templates static config $out/share/schema-explorer/
-            makeWrapper $out/share/schema-explorer/schemaexplorer \
-              $out/bin/schemaexplorer
-          '';
-        };
-      };
-
-      # beads-tui (`bdt`) — TUI for the `bd` issue tracker. Not on PyPI
-      # or in nixpkgs; pinned to a specific commit on main. Built against
-      # unstable's python ecosystem because beads-tui needs textual >= 8
-      # and stable nixpkgs ships textual 3.2. To bump: change `rev` to a
-      # new commit, set `hash` to lib.fakeHash, rebuild, then paste the
-      # hash nix prints back in.
-      beadsTuiOverlay = final: prev:
-        let
-          unstable = import nixpkgs-unstable {
-            inherit (final) system;
-            config.allowUnfree = true;
-          };
-        in {
-          beads-tui = unstable.python3.pkgs.buildPythonApplication {
-            pname = "beads-tui";
-            version = "0.2.16";
-            pyproject = true;
-            src = prev.fetchFromGitHub {
-              owner = "gm2211";
-              repo = "beads-tui";
-              rev = "0f3c6345043a6047cd3d813ba41b2f87c6831226";
-              hash = "sha256-R3qr/K4U6Y0+jBq+8BXF54C7wMv2eQ83aOzvDz2KR3w=";
-            };
-            build-system = [ unstable.python3.pkgs.setuptools unstable.python3.pkgs.setuptools-scm ];
-            dependencies = [ unstable.python3.pkgs.textual ];
-          };
-        };
-
-      # claude-code releases weekly and stable nixpkgs lags badly. The
-      # devvm already pulls it from unstable via unstableOverlay; the
-      # bare-metal hosts run it too (sandboxed — see modules/sandbox), so
-      # they need the current release as well. This narrow overlay freshens
-      # only claude-code, leaving the rest of the host on stable (unlike
-      # unstableOverlay, which is deliberately devvm-only).
-      claudeCodeOverlay = final: prev: {
-        claude-code = (import nixpkgs-unstable {
-          inherit (final) system;
-          config.allowUnfree = true;
-        }).claude-code;
-      };
-
-      # Stable's Ghostty 1.1.3 segfaults at startup because its libxev needs
-      # io_uring, which our hardened kernel disables (modules/hardware.nix);
-      # 1.3.1's libxev falls back to epoll. Narrow overlay like
-      # claudeCodeOverlay — the rest of the host stays on stable.
-      # https://github.com/ghostty-org/ghostty/discussions/3267#discussioncomment-12283148
-      ghosttyOverlay = final: prev: {
-        ghostty = (import nixpkgs-unstable {
-          inherit (final) system;
-          config.allowUnfree = true;
-        }).ghostty;
-      };
+      overlays = import ./overlays { inherit nixpkgs-unstable gitopolis disk-hog-backup; };
 
       devvmModules = [
-        { nixpkgs.overlays = [ unstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay beadsTuiOverlay schemaExplorerOverlay ]; }
+        { nixpkgs.overlays = with overlays; [ unstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay beadsTuiOverlay schemaExplorerOverlay ]; }
         ./hosts/devvm.nix
         ./modules/all-hosts.nix
         ./modules/containers.nix
@@ -206,7 +78,7 @@
           };
         in {
           full = mk [
-            { nixpkgs.overlays = [ gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay schemaExplorerOverlay claudeCodeOverlay ghosttyOverlay ]; }
+            { nixpkgs.overlays = with overlays; [ gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay schemaExplorerOverlay claudeCodeOverlay ghosttyOverlay ]; }
             ./modules/bare-metal-hosts.nix
             home-manager.nixosModules.home-manager
             {

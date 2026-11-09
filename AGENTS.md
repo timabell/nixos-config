@@ -71,20 +71,14 @@ run Claude Code confined. Claude Code is injected into the sandbox via
 VM also installs claude-code on the normal PATH, so there it works both in and
 out of the sandbox.
 
-## Overlays (flake.nix)
+## Overlays (overlays/)
 
-Non-nixpkgs and freshened packages are wired in via overlays defined in
-`flake.nix`. When touching these, read the comment above each overlay — several
-document a bump procedure (set `hash`/`vendorHash` to `lib.fakeHash`, rebuild,
-paste back the hash nix prints).
-
-- `unstableOverlay` — pulls specific packages from nixpkgs-unstable; **devvm-only**.
-- `claudeCodeOverlay`, `ghosttyOverlay` — narrow overlays that freshen only one
-  package from unstable on bare-metal hosts (claude-code releases weekly;
-  Ghostty <1.3 segfaults because our hardened kernel disables io_uring).
-- `gitopolisOverlay` — from its own flake input.
-- `lazydockerProfilesOverlay`, `schemaExplorerOverlay`, `beadsTuiOverlay` — built
-  from Tim's forks / pinned commits, not in nixpkgs.
+Packages that aren't in nixpkgs, and newer or patched builds of ones that are,
+come from overlays: one per file in `overlays/`, registered in
+`overlays/default.nix`. Each machine lists the overlays it uses next to its
+modules in `flake.nix`. Read a file's header comment before changing it —
+several document a bump procedure (set `hash`/`vendorHash` to `lib.fakeHash`,
+rebuild, paste back the hash nix prints).
 
 ## Conventions
 

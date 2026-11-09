@@ -15,8 +15,8 @@
 # never bare on the host. The devvm additionally installs claude-code on its
 # PATH (modules/dev-tooling.nix), so there it also works outside the
 # sandbox. claude-code tracks unstable, since it releases weekly: via
-# claudeCodeOverlay in flake.nix on bare metal, via unstableOverlay on the
-# devvm.
+# overlays/claude-code.nix on bare metal, via overlays/devvm-from-unstable.nix
+# on the devvm.
 #
 # Imported by modules/bare-metal-hosts.nix (bare metal) and devvmModules (devvm).
 
