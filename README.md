@@ -211,6 +211,54 @@ changes update the boot entry but only take effect on the next reboot.
 If something breaks, reboot and pick a previous generation from the
 systemd-boot menu.
 
+## Updating
+
+There are two kinds of update.
+
+### Within a release
+
+`./update-pkg-cache.sh` moves the `flake.lock` pins forward along the
+current release branch (`nixos-YY.MM` in `flake.nix`). That branch only
+gets security fixes and safe bumps, so it rarely breaks, but it **stops
+moving when the release goes end-of-life**. After that, "up to date" means
+frozen: no security fixes, old kernel, old firmware.
+
+### Upgrading to a new NixOS release
+
+NixOS releases twice a year, `YY.05` (May) and `YY.11` (November). Each is
+supported until about a month after the next one ships, so plan to upgrade
+roughly every six months.
+
+```sh
+./upgrade-nixos-release.sh 26.05
+```
+
+This repoints `nixpkgs` and `home-manager` in `flake.nix`, updates the
+lock, builds the current host without switching, and commits if the
+build passes. Then:
+
+1. Read the release notes' "backward incompatibilities" section, for every
+   release you're skipping. Fix any renamed/removed options the build
+   complains about.
+2. `./update-current-host.sh` to switch, reboot (new kernel), check things
+   work. If not, pick the previous generation from the boot menu.
+3. Commit any fixes, push, then rebuild the other hosts and the dev VM.
+
+**Don't change `system.stateVersion` or `home.stateVersion`.** They record
+the release a machine was *first installed* on (for stateful data
+layouts), not the release it runs.
+
+Packages taken from unstable (`overlays/from-unstable.nix`) may no longer
+need to be once stable catches up; their comments say why each is there.
+
+Where to check:
+
+- [NixOS release notes](https://nixos.org/manual/nixos/stable/release-notes) -- per-release changes and backward incompatibilities
+- [Home Manager release notes](https://nix-community.github.io/home-manager/release-notes.xhtml) -- its own breaking changes, per release
+- [endoflife.date/nixos](https://endoflife.date/nixos) -- which releases are supported and until when
+- [status.nixos.org](https://status.nixos.org/) -- channel branches and when each last updated (a stale date = EOL)
+- [NixOS announcements](https://nixos.org/blog/announcements/) -- release announcements
+
 ## Useful references
 
 - [NixOS manual](https://nixos.org/manual/nixos/stable/) -- the main reference for NixOS configuration options
