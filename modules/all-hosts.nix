@@ -31,7 +31,7 @@
     ripgrep
     schema-explorer
     silver-searcher
-    sloccount
+    loccount
     sqlite
     sqlitebrowser
     tig

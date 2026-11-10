@@ -43,7 +43,7 @@
     iotop
     nethogs
     powertop
-    neofetch
+    fastfetch
     smartmontools
     clamav
     v4l-utils

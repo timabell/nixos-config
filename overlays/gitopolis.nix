@@ -5,5 +5,5 @@
 { gitopolis }:
 
 final: prev: {
-  gitopolis = gitopolis.packages.${final.system}.default;
+  gitopolis = gitopolis.packages.${final.stdenv.hostPlatform.system}.default;
 }

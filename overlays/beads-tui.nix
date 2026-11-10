@@ -10,7 +10,7 @@
 final: prev:
 let
   unstable = import nixpkgs-unstable {
-    inherit (final) system;
+    system = final.stdenv.hostPlatform.system;
     config.allowUnfree = true;
   };
 in {

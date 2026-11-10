@@ -7,7 +7,7 @@
 final: prev:
 let
   unstable = import nixpkgs-unstable {
-    inherit (final) system;
+    system = final.stdenv.hostPlatform.system;
     config.allowUnfree = true;
   };
 in
@@ -38,4 +38,9 @@ prev.lib.genAttrs [
   # Stable's 2025.5.3 compiles node from source on nixos (slow) instead
   # of using the pre-built binaries.
   "mise"
+
+  # Stable's 1.144.0 fails to build: its patchPhase rm's the pre-1.122
+  # ripgrep path (@vscode/ripgrep/bin/rg); unstable has the
+  # ripgrep-universal fix. Drop once stable gets it.
+  "vscode"
 ] (name: unstable.${name})
