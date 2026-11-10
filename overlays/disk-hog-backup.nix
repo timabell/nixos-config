@@ -5,5 +5,5 @@
 { disk-hog-backup }:
 
 final: prev: {
-  disk-hog-backup = disk-hog-backup.packages.${final.system}.default;
+  disk-hog-backup = disk-hog-backup.packages.${final.stdenv.hostPlatform.system}.default;
 }

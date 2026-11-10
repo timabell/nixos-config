@@ -4,7 +4,7 @@
   imports = [ ./tim.nix ];
 
   # No GPG keys in the VM — keys live on the host.
-  programs.git.extraConfig.commit.gpgsign = lib.mkForce false;
+  programs.git.settings.commit.gpgsign = lib.mkForce false;
 
   # Per-project dev shells via direnv + nix-direnv. VM-only;
   # see hosts/devvm.nix for reasoning.
@@ -23,9 +23,7 @@
         # legacy repos work without an explicit .mise.toml.
         idiomatic_version_file_enable_tools = [ "node" "dotnet" "ruby" ];
         not_found_auto_install = false;
-        # Force prebuilt node tarballs instead of source build.
-        # mise's default in 2025.5.3 (nixpkgs 25.05) compiles V8
-        # from source which is ~10× slower than the prebuilt.
+        # Force prebuilt node tarballs; a V8 source build is ~10× slower.
         node.compile = false;
         # Same reasoning for python: the source build via
         # python-build can't find zlib/openssl/etc. on NixOS's

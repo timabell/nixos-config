@@ -7,35 +7,28 @@
 final: prev:
 let
   unstable = import nixpkgs-unstable {
-    inherit (final) system;
+    system = final.stdenv.hostPlatform.system;
     config.allowUnfree = true;
   };
 in
 prev.lib.genAttrs [
-  # Gas City prerequisite (the `bd` CLI); not in stable nixpkgs at all.
+  # Gas City prerequisite (the `bd` CLI). Stable has 1.0.x; kept on
+  # unstable so its database isn't opened by an older bd than wrote it.
   "beads"
 
-  # OpenCollection YAML collections need 3.0+; stable has 2.x.
+  # Want 4.x; stable has 3.3.
   "bruno"
 
   # Releases weekly; stable nixpkgs lags badly.
   "claude-code"
 
-  # Gas City's managed Dolt checks reject anything below 1.86.2; stable
-  # has 1.52.3.
+  # Gas City's managed Dolt checks reject anything below 1.86.2. Stable
+  # now meets that, but unstable is on 2.x; kept there so existing Dolt
+  # data isn't opened by an older major version.
   "dolt"
 
-  # Stable's 1.1.3 segfaults at startup because its libxev needs io_uring,
-  # which the bare-metal hardened kernel disables (modules/hardware.nix);
-  # 1.3.1's libxev falls back to epoll.
-  # https://github.com/ghostty-org/ghostty/discussions/3267#discussioncomment-12283148
-  "ghostty"
-
-  # IDEs ship quarterly; stable pins an old minor. The whole set, so any
-  # IDE added to dev-tooling.nix gets the current release.
-  "jetbrains"
-
-  # Stable's 2025.5.3 compiles node from source on nixos (slow) instead
-  # of using the pre-built binaries.
-  "mise"
+  # Stable's 1.144.0 fails to build: its patchPhase rm's the pre-1.122
+  # ripgrep path (@vscode/ripgrep/bin/rg); unstable has the
+  # ripgrep-universal fix. Drop once stable gets it.
+  "vscode"
 ] (name: unstable.${name})

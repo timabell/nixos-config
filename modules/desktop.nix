@@ -48,9 +48,9 @@
     digikam
     firefox
     gimp
-    gpx-viewer
+    gpxsee
     inkscape
-    k4dirstat
+    qdirstat
     kdePackages.okular
     kdePackages.kdenlive
     keepassxc
@@ -68,7 +68,7 @@
     slack
     telegram-desktop
     vlc
-    vokoscreen
+    vokoscreen-ng
     vscode
     x2goclient
     xclip

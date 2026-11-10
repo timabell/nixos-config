@@ -11,7 +11,7 @@
   gitopolisOverlay = import ./gitopolis.nix { inherit gitopolis; };
   diskHogBackupOverlay = import ./disk-hog-backup.nix { inherit disk-hog-backup; };
   schemaExplorerOverlay = import ./schema-explorer.nix;
-  beadsTuiOverlay = import ./beads-tui.nix { inherit nixpkgs-unstable; };
+  beadsTuiOverlay = import ./beads-tui.nix;
 
   # Patched builds.
   lazydockerProfilesOverlay = import ./lazydocker.nix;

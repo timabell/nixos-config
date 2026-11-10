@@ -84,8 +84,10 @@ rebuild, paste back the hash nix prints).
 
 - The default user `tim` is defined once in `modules/user.nix` — change it there
   if reusing this config.
-- nixpkgs is pinned to stable `25.05`; to take a package from unstable instead,
-  add its name to the list in `overlays/from-unstable.nix`.
+- nixpkgs is pinned to a stable release (`nixos-YY.MM` in `flake.nix`); to take
+  a package from unstable instead, add its name to the list in
+  `overlays/from-unstable.nix`. Move to a new release with
+  `./upgrade-nixos-release.sh` (see README "Updating").
 - `dotfiles/` holds raw config files deployed by home-manager (`home/tim.nix`,
   `home/cinnamon.nix`); edit these rather than hand-placing files in `~`.
 - Keep the "why" in comments: this repo's nix files carry unusually detailed
