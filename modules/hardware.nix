@@ -8,7 +8,12 @@
   };
 
   # firmware updates
-  services.fwupd.enable = true;
+  services.fwupd = {
+    enable = true;
+    # Secure Boot is off, and the firmware lacks NVRAM space for dbx updates.
+    # Re-enable if Secure Boot is turned on.
+    daemonSettings.DisabledPlugins = [ "uefi_dbx" ];
+  };
 
   # printing (HP)
   services.printing = {
