@@ -39,8 +39,9 @@ echo "+ nix flake update nixpkgs home-manager"
 nix flake update nixpkgs home-manager
 
 echo "==> Building .#$(hostname) (build only, nothing is switched)"
-echo "+ nixos-rebuild build --flake .#$(hostname)"
-nixos-rebuild build --flake .#"$(hostname)"
+# Same build as `nixos-rebuild build`, minus the ./result symlink it leaves.
+echo "+ nix build --no-link .#nixosConfigurations.$(hostname).config.system.build.toplevel"
+nix build --no-link .#nixosConfigurations."$(hostname)".config.system.build.toplevel
 
 if ! git diff --quiet flake.nix flake.lock; then
   echo "==> Committing flake.nix + flake.lock"
