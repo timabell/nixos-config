@@ -259,6 +259,31 @@ Where to check:
 - [status.nixos.org](https://status.nixos.org/) -- channel branches and when each last updated (a stale date = EOL)
 - [NixOS announcements](https://nixos.org/blog/announcements/) -- release announcements
 
+### Freeing disk space
+
+Every rebuild keeps the previous system as a generation (the entries in the
+boot menu), and nothing is deleted until you garbage-collect. After a release
+upgrade the whole previous release stays on disk until you do.
+
+```sh
+./cleanup-old-generations.sh
+```
+
+which runs:
+
+```sh
+sudo nix-collect-garbage --delete-older-than 90d   # system generations + unreferenced store paths
+nix-collect-garbage --delete-older-than 90d        # same for your user profile (home-manager)
+sudo nixos-rebuild boot --flake .#"$(hostname)"    # prune old entries from the boot menu
+```
+
+Generations from the last 90 days are kept, so a just-replaced release
+stays until it ages out. `-d` instead of `--delete-older-than 90d` deletes
+*all* old generations, leaving nothing to roll back to.
+`nix-store --optimise` additionally hard-links identical files in the
+store. Stray `result` symlinks from `nix build` are GC roots; delete them
+first or what they point at stays.
+
 ## Useful references
 
 - [NixOS manual](https://nixos.org/manual/nixos/stable/) -- the main reference for NixOS configuration options
