@@ -15,6 +15,7 @@
     delta
     disk-hog-backup
     dos2unix
+    emote
     fzf
     gh
     ghostty
