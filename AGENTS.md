@@ -56,9 +56,11 @@ so desktop lives in the bare-metal base.
 `fleetHost`). It is the only config that imports `modules/dev-tooling.nix` — the
 language build toolchains (npm/dotnet/cargo/etc.). This is deliberate: **no
 development builds run on bare-metal hosts** (supply-chain risk). Bare-metal
-hosts get shared tooling (`modules/all-hosts.nix`) and Docker (`modules/containers.nix`)
-but no language toolchains. See `security-boundaries.md` for the full threat
-model, and `dev-vm.md` for VM setup/operation.
+hosts share `modules/all-hosts.nix` and Docker (`modules/containers.nix`) with
+the VM, but get no language toolchains. The VM has its own XFCE desktop in
+`hosts/devvm.nix` and doesn't import `modules/desktop.nix`. See
+`security-boundaries.md` for the full threat model, and `dev-vm.md` for VM
+setup/operation.
 
 **The `sandbox` command** (`modules/sandbox/`, vendored from
 [timabell/sandbox](https://github.com/timabell/sandbox)) runs a single risky
@@ -82,6 +84,12 @@ rebuild, paste back the hash nix prints).
 
 ## Conventions
 
+- Where to add a package: `modules/all-hosts.nix` if every machine
+  (bare metal *and* dev VM) should have it, GUI apps included, since every
+  machine has a desktop. Use `modules/desktop.nix` (bare metal only, Cinnamon)
+  or `hosts/devvm.nix` (VM only, XFCE) only when it really belongs on one
+  side. Language toolchains go in `modules/dev-tooling.nix` (VM only).
+  Don't add the same package in two places; put it in the shared module.
 - The default user `tim` is defined once in `modules/user.nix` — change it there
   if reusing this config.
 - nixpkgs is pinned to a stable release (`nixos-YY.MM` in `flake.nix`); to take
