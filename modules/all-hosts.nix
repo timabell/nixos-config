@@ -16,6 +16,7 @@
     disk-hog-backup
     dos2unix
     emote
+    firefox
     fzf
     gh
     ghostty
@@ -28,6 +29,7 @@
     lazydocker
     neovim
     openssl
+    pavucontrol
     pv
     ripgrep
     schema-explorer
@@ -39,6 +41,7 @@
     tree
     vim
     wget
+    xclip
     zellij
     zsh
   ];

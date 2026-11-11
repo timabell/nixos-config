@@ -46,7 +46,6 @@
     clamtk
     dia
     digikam
-    firefox
     gimp
     gpxsee
     inkscape
@@ -59,7 +58,6 @@
     meld
     obsidian
     obs-studio
-    pavucontrol
     pdfarranger
     remmina
     screenkey
@@ -71,7 +69,6 @@
     vokoscreen-ng
     vscode
     x2goclient
-    xclip
     zeal
   ];
 }

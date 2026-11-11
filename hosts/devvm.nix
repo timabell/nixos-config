@@ -172,12 +172,7 @@
   # lives in modules/dev-tooling.nix — imported by the devvm only. This
   # host file keeps just the VM's own desktop apps and cert plumbing.
   environment.systemPackages = with pkgs; [
-    # browser (for docs/auth flows inside the VM)
-    firefox
-
     # desktop conveniences
-    xclip
-    pavucontrol
     orca
 
     # certutil, used by `dotnet dev-certs https --trust` to register
