@@ -59,6 +59,15 @@ in
       event-sounds = false;
     };
 
+    # Swap Cinnamon's defaults: Super+L locks (Windows habit), Ctrl+Alt+L
+    # opens Looking Glass.
+    "org/cinnamon/desktop/keybindings" = {
+      looking-glass-keybinding = [ "<Control><Alt>l" ];
+    };
+    "org/cinnamon/desktop/keybindings/media-keys" = {
+      screensaver = [ "<Super>l" "XF86ScreenSaver" ];
+    };
+
     "org/cinnamon/settings-daemon/peripherals/keyboard" = {
       numlock-state = "off";
     };
