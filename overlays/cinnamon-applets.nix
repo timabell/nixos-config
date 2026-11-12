@@ -1,7 +1,14 @@
 # Third-party Cinnamon panel applets from linuxmint/cinnamon-spices-applets,
-# pinned to one commit and installed into share/cinnamon/applets, which
-# Cinnamon searches via XDG_DATA_DIRS. Only the listed applets are fetched
-# (sparse checkout).
+# pinned to one commit. Only the listed applets are fetched (sparse
+# checkout).
+#
+# Installed per user, not via systemPackages: home/cinnamon.nix links each
+# one into ~/.local/share/cinnamon/applets/<uuid>. The panel would find them
+# anywhere on XDG_DATA_DIRS, but the Configure dialog (xlet-settings.py)
+# only looks in Cinnamon's own store dir and ~/.local/share/cinnamon/applets,
+# and quits silently if the applet isn't in either.
+# Cinnamon may offer "updates" for these in Applets settings; ignore them,
+# as they would replace the pinned, patched copy with an unpatched download.
 #
 # Spices are written for Mint: they assume /usr/bin, tools on PATH, and a
 # writable applet folder. None of that holds here (the folder is in the

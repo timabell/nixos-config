@@ -44,7 +44,6 @@
     audacity
     cheese
     chromium
-    cinnamon-applets
     clamtk
     dia
     digikam

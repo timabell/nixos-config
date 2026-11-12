@@ -184,6 +184,13 @@ in
         fi
       '') spiceValues));
 
+  # Third-party applets go in ~/.local/share, not systemPackages, or their
+  # Configure dialog won't open. See overlays/cinnamon-applets.nix.
+  xdg.dataFile = lib.listToAttrs (map (uuid: {
+    name = "cinnamon/applets/${uuid}";
+    value.source = "${pkgs.cinnamon-applets}/share/cinnamon/applets/${uuid}";
+  }) pkgs.cinnamon-applets.applets);
+
   xdg.configFile."mimeapps.list".force = true; # override any manual open-with-app config
   xdg.mimeApps = {
     enable = true;
