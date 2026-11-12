@@ -35,6 +35,8 @@
     schema-explorer
     silver-searcher
     loccount
+    lychee
+    markdownlint-cli2
     sqlite
     sqlitebrowser
     tig
@@ -43,6 +45,7 @@
     wget
     xclip
     zellij
+    zola
     zsh
   ];
 }
