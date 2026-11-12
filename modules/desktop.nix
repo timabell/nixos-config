@@ -6,6 +6,7 @@
   services.xserver.displayManager.lightdm.enable = true;
   services.xserver.desktopManager.cinnamon.enable = true;
   services.displayManager.defaultSession = "cinnamon";
+  environment.cinnamon.excludePackages = [ pkgs.onboard ];
 
   # UK keyboard layout
   services.xserver.xkb.layout = "gb";
