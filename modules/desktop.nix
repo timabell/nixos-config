@@ -7,6 +7,8 @@
   services.xserver.desktopManager.cinnamon.enable = true;
   services.displayManager.defaultSession = "cinnamon";
   environment.cinnamon.excludePackages = [ pkgs.onboard ];
+  # sysmonitor@orcus needs the GTop typelib, which Cinnamon's wrapper lacks.
+  services.xserver.desktopManager.cinnamon.sessionPath = [ pkgs.libgtop ];
 
   # UK keyboard layout
   services.xserver.xkb.layout = "gb";
@@ -44,10 +46,12 @@
     audacity
     cheese
     chromium
+    cinnamon-applets
     clamtk
     dia
     digikam
     gimp
+    gnome-system-monitor
     gpxsee
     inkscape
     qdirstat

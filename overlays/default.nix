@@ -12,6 +12,7 @@
   diskHogBackupOverlay = import ./disk-hog-backup.nix { inherit disk-hog-backup; };
   schemaExplorerOverlay = import ./schema-explorer.nix;
   beadsTuiOverlay = import ./beads-tui.nix;
+  cinnamonAppletsOverlay = import ./cinnamon-applets.nix;
 
   # Patched builds.
   lazydockerProfilesOverlay = import ./lazydocker.nix;
