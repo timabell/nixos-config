@@ -16,7 +16,6 @@
     disk-hog-backup
     dos2unix
     emote
-    firefox
     fzf
     gh
     ghostty
@@ -48,4 +47,10 @@
     zola
     zsh
   ];
+
+  programs.firefox = {
+    enable = true;
+    # Native window title bar instead of tabs drawn in it.
+    preferences."browser.tabs.inTitlebar" = 0;
+  };
 }
