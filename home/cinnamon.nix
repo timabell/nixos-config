@@ -51,6 +51,12 @@ in
       next-applet-id = 16;
     };
 
+    # Cinnamon's built-in Ctrl+Alt+T launches this.
+    "org/cinnamon/desktop/applications/terminal" = {
+      exec = "ghostty";
+      exec-arg = "-e";
+    };
+
     "org/cinnamon/desktop/interface" = {
       toolkit-accessibility = false;
     };
