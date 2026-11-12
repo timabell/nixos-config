@@ -208,6 +208,18 @@ This doesn't reboot. It restarts/reloads only the services that changed
 (e.g. adding syncthing starts the syncthing service). Kernel or bootloader
 changes update the boot entry but only take effect on the next reboot.
 
+Cinnamon panel applets need extra steps:
+
+- Adding or changing an applet in `overlays/cinnamon-applets.nix`: restart
+  Cinnamon (Ctrl+Alt+Esc) to load the new code.
+- Changing `cinnamon.sessionPath` (e.g. libgtop for System Monitor): log out
+  and back in. The session environment is only set at login, and restarting
+  Cinnamon reuses the old one. So the first switch to a config with System
+  Monitor needs a logout.
+- Adding a new applet: rebuild again after it has loaded. Its settings file
+  in `~/.config/cinnamon/spices/` is only created on first load, so the
+  values in `home/cinnamon.nix` are applied on the next rebuild.
+
 If something breaks, reboot and pick a previous generation from the
 systemd-boot menu.
 
