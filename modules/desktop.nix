@@ -14,8 +14,6 @@
   services.xserver.xkb.layout = "gb";
   console.keyMap = "uk";
 
-  # blue light filter is managed per-user via home-manager (services.redshift)
-
   # flatpak for anything not well-packaged in nixpkgs
   services.flatpak.enable = true;
 
