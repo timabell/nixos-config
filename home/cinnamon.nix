@@ -57,6 +57,24 @@ in
 
     "org/cinnamon/desktop/sound" = {
       event-sounds = false;
+      input-feedback-sounds = false;
+      volume-sound-enabled = false;
+    };
+
+    # Window/session effect sounds (swish on map/close/minimise etc.).
+    "org/cinnamon/sounds" = {
+      switch-enabled = false;
+      close-enabled = false;
+      map-enabled = false;
+      minimize-enabled = false;
+      maximize-enabled = false;
+      unmaximize-enabled = false;
+      tile-enabled = false;
+      login-enabled = false;
+      logout-enabled = false;
+      plug-enabled = false;
+      unplug-enabled = false;
+      notification-enabled = false;
     };
 
     # Swap Cinnamon's defaults: Super+L locks (Windows habit), Ctrl+Alt+L
