@@ -87,9 +87,17 @@ in
     # opens Looking Glass.
     "org/cinnamon/desktop/keybindings" = {
       looking-glass-keybinding = [ "<Control><Alt>l" ];
+      custom-list = [ "custom0" ];
     };
     "org/cinnamon/desktop/keybindings/media-keys" = {
       screensaver = [ "<Super>l" "XF86ScreenSaver" ];
+      # Free Print for the shutter binding below.
+      screenshot = lib.hm.gvariant.mkEmptyArray lib.hm.gvariant.type.string;
+    };
+    "org/cinnamon/desktop/keybindings/custom-keybindings/custom0" = {
+      name = "Shutter select";
+      command = "shutter --select";
+      binding = [ "Print" ];
     };
 
     "org/cinnamon/settings-daemon/peripherals/keyboard" = {
