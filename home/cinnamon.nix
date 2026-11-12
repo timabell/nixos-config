@@ -13,20 +13,66 @@
 # Cinnamon splits its state across two stores. The panel layout and simple
 # settings live in dconf (below, via dconf.settings). Each applet's own
 # settings live in a writable "spice" JSON that Cinnamon regenerates from
-# its schema on upgrade — so the calendar clock format is reconciled into
-# that live file by an activation script rather than symlinked read-only
-# (which Cinnamon would clobber on the next upgrade).
+# its schema on upgrade — so the values we care about (spiceValues) are
+# reconciled into those live files by an activation script rather than
+# symlinked read-only (which Cinnamon would clobber on the next upgrade).
 
 let
-  calendarFormat = "📅 %a %e %b %Y 🕓 %H:%M:%S";
-
   # An applet's instance id (the trailing number in its enabled-applets
   # entry) is also its spice-settings filename, so pin it once here and use
   # it in both places — the enabled-applets entry below and the JSON path
   # the activation script targets — so the two can't drift.
   calendarInstanceId = "13";
-  calendarSettings =
-    "${config.xdg.configHome}/cinnamon/spices/calendar@cinnamon.org/${calendarInstanceId}.json";
+  autoDarkLightInstanceId = "18";
+  brightnessInstanceId = "19";
+
+  spiceFile = uuid: id: "${config.xdg.configHome}/cinnamon/spices/${uuid}/${id}.json";
+
+  darkLight = mode: gtk: {
+    "${mode}-mode_themes_entry_applications" = gtk;
+    "${mode}-mode_themes_entry_desktop" = gtk;
+    "${mode}-mode_themes_entry_icons" = "Mint-Y-Sand";
+    "${mode}-mode_themes_entry_mouse-pointer" = "Bibata-Modern-Classic";
+  };
+
+  preset = name: brightness: r: g: b: extra: {
+    inherit name brightness;
+    show = true;
+    gamma_red = r;
+    gamma_green = g;
+    gamma_blue = b;
+    start_at_sunrise = false;
+    start_at_sunset = false;
+  } // extra;
+
+  spiceValues = {
+    ${spiceFile "calendar@cinnamon.org" calendarInstanceId} = {
+      use-custom-format = true;
+      custom-format = "📅 %a %e %b %Y 🕓 %H:%M:%S";
+    };
+
+    ${spiceFile "auto-dark-light@gihaume" autoDarkLightInstanceId} =
+      darkLight "light" "Mint-Y-Aqua" // darkLight "dark" "Mint-Y-Dark-Aqua" // {
+        settings_control_switch_auto-mode = true;
+        settings_location_switch_sync-from-timezone = true;
+        # Otherwise it overwrites the entries above with the current themes.
+        has-detected-themes-light = true;
+        has-detected-themes-dark = true;
+      };
+
+    # Software brightness and RGB gamma via xrandr; goes darker than the
+    # backlight floor. Replaces redshift (both drive gamma, so they'd fight).
+    ${spiceFile "brightness-and-gamma-applet@cardsurf" brightnessInstanceId} = {
+      disable_nightmode = true;
+      minimum_brightness = 10;
+      way_to_set_off = "all100";
+      preset_list = [
+        (preset "Day" 100 100 100 100 { start_at_sunrise = true; })
+        (preset "Evening" 100 100 85 65 { start_at_sunset = true; })
+        (preset "Bedroom" 30 100 70 45 { })
+      ];
+    };
+  };
 in
 {
   dconf.settings = {
@@ -35,20 +81,24 @@ in
         "panel1:left:0:menu@cinnamon.org:0"
         "panel1:left:1:separator@cinnamon.org:1"
         "panel1:left:2:grouped-window-list@cinnamon.org:2"
-        "panel1:right:0:workspace-switcher@cinnamon.org:15"
-        "panel1:right:1:systray@cinnamon.org:3"
-        "panel1:right:2:xapp-status@cinnamon.org:4"
-        "panel1:right:3:notifications@cinnamon.org:5"
-        "panel1:right:4:printers@cinnamon.org:6"
-        "panel1:right:5:removable-drives@cinnamon.org:7"
-        "panel1:right:6:keyboard@cinnamon.org:8"
-        "panel1:right:7:favorites@cinnamon.org:9"
-        "panel1:right:8:network@cinnamon.org:10"
-        "panel1:right:9:sound@cinnamon.org:11"
-        "panel1:right:10:power@cinnamon.org:12"
-        "panel1:right:11:calendar@cinnamon.org:${calendarInstanceId}"
+        "panel1:right:0:pomodoro@gregfreeman.org:17"
+        "panel1:right:1:sysmonitor@orcus:16"
+        "panel1:right:2:workspace-switcher@cinnamon.org:15"
+        "panel1:right:3:systray@cinnamon.org:3"
+        "panel1:right:4:xapp-status@cinnamon.org:4"
+        "panel1:right:5:notifications@cinnamon.org:5"
+        "panel1:right:6:printers@cinnamon.org:6"
+        "panel1:right:7:removable-drives@cinnamon.org:7"
+        "panel1:right:8:keyboard@cinnamon.org:8"
+        "panel1:right:9:favorites@cinnamon.org:9"
+        "panel1:right:10:network@cinnamon.org:10"
+        "panel1:right:11:sound@cinnamon.org:11"
+        "panel1:right:12:auto-dark-light@gihaume:${autoDarkLightInstanceId}"
+        "panel1:right:13:brightness-and-gamma-applet@cardsurf:${brightnessInstanceId}"
+        "panel1:right:14:power@cinnamon.org:12"
+        "panel1:right:15:calendar@cinnamon.org:${calendarInstanceId}"
       ];
-      next-applet-id = 16;
+      next-applet-id = 20;
     };
 
     # Cinnamon's built-in Ctrl+Alt+T launches this.
@@ -115,25 +165,31 @@ in
     };
   };
 
-  # Reconcile only the two value keys we care about. __md5__ is a hash of the
+  # Reconcile only the keys in spiceValues. __md5__ is a hash of the
   # applet's settings-schema.json that Cinnamon checks on load; if it no
   # longer matches, Cinnamon rebuilds the file from the schema and drops any
   # values in it. So touch only the `value` fields and leave __md5__ (and the
   # schema-derived structure) alone, keeping the hash valid and our edits
   # intact. Runs every activation; if the spice file doesn't exist yet (first
   # login, before Cinnamon has created it), skip and catch it next rebuild.
-  home.activation.cinnamonCalendarFormat =
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      if [ -f ${lib.escapeShellArg calendarSettings} ]; then
-        run ${pkgs.jq}/bin/jq \
-          --arg fmt ${lib.escapeShellArg calendarFormat} \
-          '.["use-custom-format"].value = true | .["custom-format"].value = $fmt' \
-          ${lib.escapeShellArg calendarSettings} \
-          > ${lib.escapeShellArg "${calendarSettings}.hm-tmp"} \
-          && run mv ${lib.escapeShellArg "${calendarSettings}.hm-tmp"} \
-               ${lib.escapeShellArg calendarSettings}
-      fi
-    '';
+  home.activation.cinnamonSpiceSettings =
+    lib.hm.dag.entryAfter [ "writeBoundary" ] (lib.concatStrings (lib.mapAttrsToList
+      (file: values: let f = lib.escapeShellArg file; in ''
+        if [ -f ${f} ]; then
+          run ${pkgs.jq}/bin/jq \
+            --argjson v ${lib.escapeShellArg (builtins.toJSON values)} \
+            'reduce ($v | to_entries[]) as $e (.; .[$e.key].value = $e.value)' \
+            ${f} > ${f}.hm-tmp \
+            && run mv ${f}.hm-tmp ${f}
+        fi
+      '') spiceValues));
+
+  # Third-party applets go in ~/.local/share, not systemPackages, or their
+  # Configure dialog won't open. See overlays/cinnamon-applets.nix.
+  xdg.dataFile = lib.listToAttrs (map (uuid: {
+    name = "cinnamon/applets/${uuid}";
+    value.source = "${pkgs.cinnamon-applets}/share/cinnamon/applets/${uuid}";
+  }) pkgs.cinnamon-applets.applets);
 
   xdg.configFile."mimeapps.list".force = true; # override any manual open-with-app config
   xdg.mimeApps = {

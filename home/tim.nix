@@ -350,31 +350,11 @@ in
     # pipewire: block slack from controlling mic volume
     "pipewire/pipewire-pulse.conf.d/20-slack-block-mic.conf".source =
       ../dotfiles/pipewire-slack-block-mic.conf;
-
-    # redshift profiles (switch manually as needed)
-    "redshift-day.conf".source = ../dotfiles/redshift-day.conf;
-    "redshift-night.conf".source = ../dotfiles/redshift-night.conf;
   };
 
   # --- cargo ---
 
   home.file.".cargo/config.toml".source = ../dotfiles/cargo-config.toml;
-
-  # --- redshift (user service uses day profile by default) ---
-
-  services.redshift = {
-    enable = true;
-    latitude = 51.0;
-    longitude = -1.0;
-    temperature = {
-      day = 6500;
-      night = 3500;
-    };
-    settings.redshift = {
-      brightness-day = "1";
-      brightness-night = "0.8";
-    };
-  };
 
   # --- maestral (open-source Dropbox sync daemon) ---
   #

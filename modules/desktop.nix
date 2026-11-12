@@ -7,12 +7,12 @@
   services.xserver.desktopManager.cinnamon.enable = true;
   services.displayManager.defaultSession = "cinnamon";
   environment.cinnamon.excludePackages = [ pkgs.onboard ];
+  # sysmonitor@orcus needs the GTop typelib, which Cinnamon's wrapper lacks.
+  services.xserver.desktopManager.cinnamon.sessionPath = [ pkgs.libgtop ];
 
   # UK keyboard layout
   services.xserver.xkb.layout = "gb";
   console.keyMap = "uk";
-
-  # blue light filter is managed per-user via home-manager (services.redshift)
 
   # flatpak for anything not well-packaged in nixpkgs
   services.flatpak.enable = true;
@@ -48,6 +48,7 @@
     dia
     digikam
     gimp
+    gnome-system-monitor
     gpxsee
     inkscape
     qdirstat
