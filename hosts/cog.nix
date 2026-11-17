@@ -17,7 +17,7 @@
   swapDevices = [
     {
       device = "/swap/swapfile";
-      size = 16384;
+      size = 32768; # = RAM, so the hibernate image always fits
     }
   ];
 
