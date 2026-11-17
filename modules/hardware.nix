@@ -20,6 +20,13 @@
     enable = true;
     drivers = [ pkgs.hplip ];
   };
+  # mDNS so CUPS and hp-setup can find network printers.
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+  programs.system-config-printer.enable = true;
 
   # logitech device manager
   hardware.logitech.wireless.enable = true;
@@ -55,5 +62,6 @@
     ffmpeg
     mplayer
     guvcview
+    hplip # hp-setup, hp-toolbox
   ];
 }
