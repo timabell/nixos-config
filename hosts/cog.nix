@@ -17,9 +17,18 @@
   swapDevices = [
     {
       device = "/swap/swapfile";
-      size = 16384;
+      size = 32768; # = RAM, so the hibernate image always fits
     }
   ];
+
+  # Hibernate to the swapfile. s2idle drains the battery flat in a couple
+  # of days, and resuming from that left the EC throttling the CPU until a
+  # full power-off. Offset is from
+  # `btrfs inspect-internal map-swapfile -r /swap/swapfile`; redo it if the
+  # swapfile is recreated (e.g. a size change).
+  boot.resumeDevice = "/dev/mapper/cryptroot";
+  boot.kernelParams = [ "resume_offset=194258176" ];
+  systemd.sleep.settings.Sleep.HibernateDelaySec = "36h"; # hibernating costs a LUKS unlock; 36h so close-at-9am, open-at-10am-next-day stays a plain resume
 
   # First install on 25.05; never change this for an existing machine.
   system.stateVersion = "25.05";
