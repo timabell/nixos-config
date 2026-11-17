@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, osConfig, pkgs, lib, ... }:
 
 # Deterministic Cinnamon panel + settings for the desktop fleet (cog, x15;
 # both run modules/desktop.nix). Captured from `dconf dump /org/cinnamon/`
@@ -162,6 +162,13 @@ in
       sleep-display-battery = 1800;
       sleep-inactive-ac-timeout = 0;
       sleep-inactive-battery-timeout = 0;
+    };
+
+    # Makes every Cinnamon "suspend" (lid, power button, menu) call logind's
+    # suspend-then-hibernate, which hibernates after HibernateDelaySec (36h). Only
+    # on hosts with hibernate set up (boot.resumeDevice), currently cog.
+    "org/cinnamon/SessionManager" = lib.mkIf (osConfig.boot.resumeDevice != "") {
+      suspend-then-hibernate = true;
     };
   };
 
