@@ -159,6 +159,14 @@ GPG: there are deliberately no keys. `git commit` works without `-S`. If
 you hit a remote that enforces signing, do the final commit/push from the
 host.
 
+Git identity isn't in this repo (so cloners don't commit as me). Set it
+once per VM in the file `home/tim.nix` includes:
+
+```
+git config --file ~/.gitconfig.local user.name Sandbox
+git config --file ~/.gitconfig.local user.email sandbox@example.org
+```
+
 ## Daily use
 
 ### Getting code into the VM
