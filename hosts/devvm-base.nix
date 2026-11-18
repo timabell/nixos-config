@@ -15,7 +15,7 @@
   boot.loader.timeout = 0;
 
   # Small disk at build time so cptofs/LKL can fit the ext4 metadata in
-  # its ~100 MiB in-process memory budget. Resize the qcow2 to 80 GiB on
+  # its ~100 MiB in-process memory budget. Resize the qcow2 to 150 GiB on
   # the host before first boot (`qemu-img resize`); growPartition +
   # autoResize from disk-image.nix expand the partition and filesystem
   # on first boot.
@@ -60,7 +60,16 @@
     options = [ "nofail" ];
   };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    # The first switch to the full config ran an 80G disk out of space with
+    # leftovers from earlier attempts. GC automatically when free space
+    # drops below min-free during a build, up to max-free. In the bare
+    # image because its nix-daemon runs that first switch.
+    min-free = 5 * 1024 * 1024 * 1024;
+    max-free = 20 * 1024 * 1024 * 1024;
+    auto-optimise-store = true;
+  };
 
   environment.systemPackages = with pkgs; [
     git

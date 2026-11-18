@@ -297,7 +297,7 @@ else, or reproducing the VM from zero).
 
 ## Expanding the disk later
 
-If 80 GiB ever isn't enough, raise the cap on the existing qcow2 (no
+If 150 GiB ever isn't enough, raise the cap on the existing qcow2 (no
 rebuild needed) — qcow2 is sparse so this is cheap:
 
 1. Shut down the VM.

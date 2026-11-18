@@ -45,10 +45,10 @@ echo "+ sudo install -o $QEMU_USER -g $QEMU_USER -m 0660 $OUT/devvm-base.qcow2 $
 sudo install -o "$QEMU_USER" -g "$QEMU_USER" -m 0660 "$OUT/devvm-base.qcow2" "$DISK"
 
 # Built tiny (~4G) because cptofs/LKL OOMs on a big ext4 at build time.
-# qcow2 is sparse so 80G is a cap, not an allocation; growPartition +
+# qcow2 is sparse so 150G is a cap, not an allocation; growPartition +
 # autoResize grow the filesystem on first boot.
-echo "+ sudo qemu-img resize $DISK 80G"
-sudo qemu-img resize "$DISK" 80G
+echo "+ sudo qemu-img resize $DISK 150G"
+sudo qemu-img resize "$DISK" 150G
 
 # Free the ~2.4G store copy now it's been copied out. A result link from
 # a manual `nix build .#devvm-base` would keep it alive, so drop that too.
