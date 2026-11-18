@@ -129,8 +129,14 @@ From inside the running bare VM, apply the full config (XFCE, IDEs,
 etc.):
 
 ```
-sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm
+cd ~/repo/nixos-config
+./update-current-host.sh
 ```
+
+`~/repo` is the host's `~/repo`, shared in, so this applies your local
+checkout, unpushed changes included. If the repo isn't at
+`~/repo/nixos-config` on the host, use
+`sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm`.
 
 This downloads pre-built store paths from `cache.nixos.org` rather than
 running `cptofs` — much faster than rebuilding the qcow2 from scratch.
@@ -230,12 +236,12 @@ For other languages add to `packages`: `dotnet-sdk_8`, `rustup` or
 
 ### Iterating on the devvm NixOS config itself
 
-The flake repo lives at `~/work/nixos-config/` inside the VM (the share
-copy). Edit on host, the change is live in the VM. Apply:
+The flake repo lives at `~/repo/nixos-config/` inside the VM (the host
+checkout, shared in). Edit on host, the change is live in the VM. Apply:
 
 ```
-cd ~/work/nixos-config
-sudo nixos-rebuild switch --flake .#devvm
+cd ~/repo/nixos-config
+./update-current-host.sh
 ```
 
 For a full reset (e.g. after major changes), reboot:
@@ -266,17 +272,11 @@ gopass env project/environment/ npm run # run a command (e.g. npm run) with secr
 
 ## Updating the VM later
 
-Rebuild in place from inside the VM — the same command you used in step 8:
+Rebuild in place from inside the VM, the same as the first switch:
 
 ```
-sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm
-```
-
-Or, if you have the repo cloned inside the VM:
-
-```
-cd ~/nixos-config
-sudo nixos-rebuild switch --flake .#devvm
+cd ~/repo/nixos-config
+./update-current-host.sh
 ```
 
 This is the workflow for almost everything. No need to rebuild and

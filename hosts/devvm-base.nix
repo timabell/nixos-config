@@ -2,8 +2,8 @@
 
 # Minimal bootable NixOS image. The qcow2 built from this is small, so
 # `cptofs` finishes in minutes rather than hours. Boot it, then run
-# `nixos-rebuild switch --flake github:timabell/nixos-config#devvm`
-# inside to apply the full devvm config — that path fetches store paths
+# `./update-current-host.sh` in ~/repo/nixos-config (the host's checkout,
+# shared in) to apply the full devvm config — that path fetches store paths
 # from cache.nixos.org over the network rather than re-running cptofs.
 
 {
@@ -44,6 +44,20 @@
   services.openssh = {
     enable = true;
     settings.PasswordAuthentication = true;
+  };
+
+  # virtiofs shares that devvm/install.sh attaches; device = its tag.
+  # Here in the bare image so the first switch can use the host's checkout
+  # at ~/repo/nixos-config. nofail keeps it bootable without the shares.
+  fileSystems."/home/tim/work" = {
+    device = "work";
+    fsType = "virtiofs";
+    options = [ "nofail" ];
+  };
+  fileSystems."/home/tim/repo" = {
+    device = "repo";
+    fsType = "virtiofs";
+    options = [ "nofail" ];
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

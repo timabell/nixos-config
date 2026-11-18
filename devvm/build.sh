@@ -66,5 +66,5 @@ echo
 echo "Next, inside the VM:"
 echo "  passwd    # default is changeme"
 echo "  ping -c1 cache.nixos.org"
-echo "  sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm"
+echo "  cd ~/repo/nixos-config && ./update-current-host.sh"
 echo "  sudo reboot"

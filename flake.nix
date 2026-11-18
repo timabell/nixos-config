@@ -113,7 +113,7 @@
       };
 
       # Full devvm config. Used in-place inside the running base VM:
-      #   sudo nixos-rebuild switch --flake github:timabell/nixos-config#devvm
+      #   cd ~/repo/nixos-config && ./update-current-host.sh   (host checkout, shared in)
       # Building it as a fresh qcow2 is also possible (.#devvm) but slow.
       nixosConfigurations.devvm = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
