@@ -9,11 +9,11 @@ See also the more granular [bubblewrap sandbox](https://github.com/timabell/sand
 - XFCE desktop (lightweight)
 - JetBrains Toolbox, VS Code, the dev tools from `modules/dev-tooling.nix`
 - SPICE: bidirectional clipboard, display auto-resize
-- Optional: virtiofs share from host (mounted ad-hoc inside the VM, not baked into the config)
+- virtiofs share from host (`~/no-sync/devvm` → `~/work` in the VM)
 - No GPG keys in the VM. Signing is host-only.
 - Outbound-only firewall
 
-## Build the qcow2
+## How the image is built
 
 The flake build *is* the installer — no live USB, no `nixos-install`. The
 flow is two-stage:
@@ -26,7 +26,12 @@ flow is two-stage:
 This avoids the ~hour of single-threaded ext4 packing that a full image
 build would take.
 
-### 1. Install Nix
+Set up the host first (pick your host's section), then build and boot
+the VM.
+
+## Host setup: Debian / Ubuntu
+
+### Install Nix
 
 Pick one:
 
@@ -54,95 +59,60 @@ Then add `experimental-features = nix-command flakes` to either
 - Landing page: <https://nixos.org/download/>
 - Script source: <https://nixos.org/nix/install>
 
-**c) Already on Nix / NixOS** — skip this step.
+Open a fresh shell so `nix` is on `PATH`.
 
-After (a) or (b), open a fresh shell so `nix` is on `PATH`.
-
-### 2. Clone the repo
+### Clone the repo
 
 ```
 git clone https://github.com/timabell/nixos-config.git
 cd nixos-config
 ```
 
-### 3. Build the bare image
+### Install libvirt
 
 ```
-nix build .#devvm-base
+devvm/host-prereqs.sh
 ```
 
-This builds a minimal bootable NixOS image. Small closure → `cptofs`
-finishes in minutes, not hours. The full devvm config is layered on top
-*inside* the running VM (step 7), where store paths are fetched from
-`cache.nixos.org` over the network instead of being packed via the
-single-threaded `cptofs` step in the image build.
+Installs libvirt + KVM, virt-manager, OVMF and virtiofsd, and adds you to
+the `libvirt` group. Log out and back in for the group to apply.
 
-Result: `result/devvm-base.qcow2` (symlink into the Nix store).
+libvirt runs qemu as `libvirt-qemu` (`qemu` on Fedora / Arch).
 
-### 4. Place the qcow2 where libvirt can read it
+## Host setup: NixOS (fleet host from this repo)
 
-```
-sudo install -o libvirt-qemu -g libvirt-qemu -m 0660 \
-  result/devvm-base.qcow2 /var/lib/libvirt/images/devvm.qcow2
-```
+Nix, the repo and libvirt (`modules/libvirt.nix`) are already there.
+After the first switch that adds libvirt, log out and back in for the
+`libvirtd` group.
 
-On Debian/Ubuntu the libvirt user/group is `libvirt-qemu`; on Fedora/Arch
-it's `qemu`. Adjust if `id libvirt-qemu` says no such user.
-
-### 5. Resize the qcow2 to 80 GiB before first boot
-
-The bare image is built tiny (~4 GiB) because `cptofs`/LKL OOMs trying to
-handle ext4 metadata for a large filesystem at build time. Resize it on
-the host now — qcow2 is sparse, so the 80 GiB is a cap, not an upfront
-allocation:
+The `default` network is defined but not started:
 
 ```
-sudo qemu-img resize /var/lib/libvirt/images/devvm.qcow2 80G
+sudo virsh net-autostart default
+sudo virsh net-start default
 ```
 
-`growPartition` + `autoResize` (from the imported `disk-image.nix`)
-expand the partition and root filesystem to fill the new disk on first
-boot.
+libvirt runs qemu as `qemu-libvirtd`.
 
-### 6. Define and start the VM
+## Build and boot the VM
 
-Run the install script (in this repo):
+### Build, copy, resize and start
 
 ```
-devvm/install.sh
+devvm/build.sh
 ```
 
-It calls `virt-install` with the right flags for an imported existing
-disk: UEFI firmware (Secure Boot off — NixOS systemd-boot isn't signed
-against the default Microsoft keys), virtio disk, virtio video, SPICE
-display, host-passthrough CPU, 8 GiB / 4 vCPU. Edit the variables at
-the top of the script if you want different memory / CPU counts or a
-different image path.
+Memory, CPU count and disk path are variables at the top of
+`devvm/install.sh`.
 
-Open the console to see what's going on:
+Open the console with `virt-viewer devvm`, or find `devvm` in
+virt-manager.
 
-```
-virt-viewer devvm
-```
+To recreate the domain (e.g. after editing `install.sh`), run
+`devvm/delete.sh` then `devvm/install.sh`. For a fresh disk too, run
+`devvm/delete.sh --disk` then `devvm/build.sh`.
 
-Or use virt-manager — `devvm` will appear in the list.
-
-If you want a virtiofs shared folder from the host, see "Adding a
-virtiofs share" below — it's intentionally not part of the baseline VM
-setup, and is opt-in via flags in the script.
-
-To recreate the domain (e.g. after editing the script):
-
-```
-virsh destroy devvm 2>/dev/null
-virsh undefine devvm --nvram
-devvm/install.sh
-```
-
-The `--nvram` flag is important: without it the previous SB-enabled
-NVRAM file lingers and the new domain inherits it.
-
-### 7. First boot of the bare image
+### First boot of the bare image
 
 You'll land in a TTY logged in as `tim` (autologin is enabled in the bare
 image). Run `passwd` to change the default password (`changeme`).
@@ -153,7 +123,7 @@ Networking comes up via DHCP. Confirm:
 ping -c1 cache.nixos.org
 ```
 
-### 8. Switch to the full devvm config
+### Switch to the full devvm config
 
 From inside the running bare VM, apply the full config (XFCE, IDEs,
 etc.):
@@ -171,6 +141,7 @@ Reboot to land in the XFCE greeter:
 ```
 sudo reboot
 ```
+
 
 After reboot:
 
@@ -342,9 +313,8 @@ qcow2 builds, doesn't affect an already-deployed VM.
 Deliberately not in the baseline VM config — keeps host-specific
 decisions out of the system config. To enable on a per-VM basis:
 
-1. **Install `virtiofsd` on the host** (Debian/Ubuntu: `apt install
-   virtiofsd`; Fedora: `dnf install virtiofsd`; Arch: `pacman -S
-   virtiofsd`). libvirt rejects the older qemu-bundled virtiofsd.
+1. **Install `virtiofsd` on the host** — covered by host setup above.
+   libvirt rejects the older qemu-bundled virtiofsd.
 
 2. **Recreate the VM with shared memory + filesystem.** In
    `devvm/install.sh`, set `SHARE_DIR` and uncomment the two flags
