@@ -109,7 +109,7 @@ boot.
 Run the install script (in this repo):
 
 ```
-./dev-vm-install.sh
+devvm/install.sh
 ```
 
 It calls `virt-install` with the right flags for an imported existing
@@ -136,7 +136,7 @@ To recreate the domain (e.g. after editing the script):
 ```
 virsh destroy devvm 2>/dev/null
 virsh undefine devvm --nvram
-./dev-vm-install.sh
+devvm/install.sh
 ```
 
 The `--nvram` flag is important: without it the previous SB-enabled
@@ -274,7 +274,7 @@ sudo reboot
 
 `bubblewrap` (`bwrap`) is installed for nested sandboxing of single
 commands inside the VM — typically LLM agents running with permission
-bypass. See [security-boundaries.md](security-boundaries.md) for the
+bypass. See [security-boundaries.md](../security-boundaries.md) for the
 threat model. The VM is the host-protection boundary; bwrap inside the
 VM is defence-in-depth against an agent stepping outside its remit
 within the VM.
@@ -347,7 +347,7 @@ decisions out of the system config. To enable on a per-VM basis:
    virtiofsd`). libvirt rejects the older qemu-bundled virtiofsd.
 
 2. **Recreate the VM with shared memory + filesystem.** In
-   `dev-vm-install.sh`, set `SHARE_DIR` and uncomment the two flags
+   `devvm/install.sh`, set `SHARE_DIR` and uncomment the two flags
    marked "virtiofs". `virsh undefine devvm --nvram` first if the
    domain already exists, then re-run the script.
 

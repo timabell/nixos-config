@@ -59,7 +59,7 @@ development builds run on bare-metal hosts** (supply-chain risk). Bare-metal
 hosts share `modules/all-hosts.nix` and Docker (`modules/containers.nix`) with
 the VM, but get no language toolchains. The VM has its own XFCE desktop in
 `hosts/devvm.nix` and doesn't import `modules/desktop.nix`. See
-`security-boundaries.md` for the full threat model, and `dev-vm.md` for VM
+`security-boundaries.md` for the full threat model, and `devvm/README.md` for VM
 setup/operation.
 
 **The `sandbox` command** (`modules/sandbox/`, vendored from

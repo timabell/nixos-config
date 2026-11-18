@@ -121,7 +121,7 @@
   environment.sessionVariables.SSL_CERT_DIR =
     "$HOME/.aspnet/dev-certs/trust:${pkgs.openssl}/etc/ssl/certs";
 
-  # Auto-mount the virtiofs share that dev-vm-install.sh attaches.
+  # Auto-mount the virtiofs share that devvm/install.sh attaches.
   # Tag "work" matches SHARE_TAG in the host script. nofail keeps the VM
   # bootable if a future variant runs without the share attached.
   fileSystems."/home/tim/work" = {

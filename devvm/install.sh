@@ -2,7 +2,7 @@
 # Define the devvm libvirt domain and start it.
 #
 # Run this on the host AFTER you've copied the qcow2 to libvirt's images
-# dir and resized it (see dev-vm.md steps 4–5). Idempotency is up to you:
+# dir and resized it (see devvm/README.md). Idempotency is up to you:
 # `virt-install` will fail if the domain already exists — `virsh undefine
 # devvm --remove-all-storage` to start over.
 
@@ -18,7 +18,7 @@ SHARE_TAG=work
 # ----------------------------------
 
 if [[ ! -f $DISK ]]; then
-  echo "error: $DISK not found. Build and copy the qcow2 first (see dev-vm.md)." >&2
+  echo "error: $DISK not found. Build and copy the qcow2 first (see devvm/README.md)." >&2
   exit 1
 fi
 
