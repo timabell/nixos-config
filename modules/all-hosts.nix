@@ -16,6 +16,7 @@
     disk-hog-backup
     dos2unix
     emote
+    file
     fzf
     gh
     ghostty
@@ -23,6 +24,7 @@
     gitopolis
     gitui
     hashdeep
+    htop
     jq
     kdiff3
     lazydocker
