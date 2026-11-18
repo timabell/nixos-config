@@ -297,23 +297,13 @@ else, or reproducing the VM from zero).
 
 ## Expanding the disk later
 
-If 150 GiB ever isn't enough, raise the cap on the existing qcow2 (no
-rebuild needed) — qcow2 is sparse so this is cheap:
+```
+devvm/resize.sh 200G
+```
 
-1. Shut down the VM.
-2. On the host:
-
-   ```
-   sudo qemu-img resize /var/lib/libvirt/images/devvm.qcow2 200G
-   ```
-
-3. Boot the VM. `autoResize` + `growPartition` (provided by the imported
-   `disk-image.nix` module) expand the partition and root filesystem to
-   fill the new space.
-
-You can also bake a new default into the build by editing
-`virtualisation.diskSize` in `hosts/devvm-base.nix` — only matters for fresh
-qcow2 builds, doesn't affect an already-deployed VM.
+Keeps everything on the disk. The cap is how much of the host's disk the
+VM may fill, so keep it under the host's free space. The default for new
+VMs is in `devvm/create.sh`.
 
 ## Changing the shared folders
 
