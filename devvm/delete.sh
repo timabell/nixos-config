@@ -22,6 +22,7 @@ done
 
 if virsh domstate "$NAME" >/dev/null 2>&1; then
   virsh destroy "$NAME" 2>/dev/null || true
+  # --nvram: otherwise the old Secure Boot NVRAM lingers and a recreated domain inherits it.
   virsh undefine "$NAME" --nvram
   echo "Undefined libvirt domain '$NAME'."
 else
