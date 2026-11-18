@@ -71,6 +71,10 @@
     auto-optimise-store = true;
   };
 
+  # Weekly trim, so space freed in the VM goes back to the host's disk
+  # (devvm/define.sh attaches the qcow2 with discard=unmap).
+  services.fstrim.enable = true;
+
   environment.systemPackages = with pkgs; [
     git
     vim
