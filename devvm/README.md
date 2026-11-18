@@ -308,31 +308,11 @@ You can also bake a new default into the build by editing
 `virtualisation.diskSize` in `hosts/devvm-base.nix` — only matters for fresh
 qcow2 builds, doesn't affect an already-deployed VM.
 
-## Adding a virtiofs share
+## Changing the shared folder
 
-Deliberately not in the baseline VM config — keeps host-specific
-decisions out of the system config. To enable on a per-VM basis:
-
-1. **Install `virtiofsd` on the host** — covered by host setup above.
-   libvirt rejects the older qemu-bundled virtiofsd.
-
-2. **Recreate the VM with shared memory + filesystem.** In
-   `devvm/install.sh`, set `SHARE_DIR` and uncomment the two flags
-   marked "virtiofs". `virsh undefine devvm --nvram` first if the
-   domain already exists, then re-run the script.
-
-3. **Mount inside the VM** when you need it:
-
-   ```
-   sudo mkdir -p /home/tim/work
-   sudo mount -t virtiofs shared /home/tim/work
-   ```
-
-   Replace `shared` with whatever target tag you used on the host side.
-
-For something more persistent without involving NixOS, add a one-shot
-systemd unit inside the VM by hand. Don't add `fileSystems` entries to
-the flake — that re-couples this config to a host-side decision.
+The host folder is `SHARE_DIR` in `devvm/install.sh`. The share is
+attached when the domain is defined, so after changing it run
+`devvm/delete.sh` then `devvm/install.sh` (the disk is kept).
 
 ## Troubleshooting
 
@@ -343,6 +323,6 @@ the flake — that re-couples this config to a host-side decision.
   `spice-vdagentd` is running inside the VM (`systemctl status spice-vdagentd`).
 - **Tiny screen / no auto-resize** — Video must be virtio (or QXL), not Cirrus.
 - **virtiofs mount fails: "wrong fs type"** — `virtiofsd` isn't running
-  on the host. Install it (see "Adding a virtiofs share").
+  on the host. Install it (see host setup).
 - **"command not found: nix-build"** after install — open a new shell so
   `/etc/profile.d/nix.sh` is sourced.

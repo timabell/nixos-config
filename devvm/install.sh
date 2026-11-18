@@ -16,7 +16,7 @@ NAME=devvm
 MEMORY_MIB=8192
 VCPUS=4
 DISK=/var/lib/libvirt/images/devvm.qcow2
-SHARE_DIR=$HOME/no-sync/devvm   # host dir, mounted in the VM as /home/tim/work via 9p
+SHARE_DIR=$HOME/no-sync/devvm   # host dir, auto-mounted in the VM at /home/tim/work (hosts/devvm.nix)
 SHARE_TAG=work
 # ----------------------------------
 
@@ -25,6 +25,7 @@ if [[ ! -f $DISK ]]; then
   exit 1
 fi
 
+echo "+ mkdir -p $SHARE_DIR"
 mkdir -p "$SHARE_DIR"
 
 virt-install \
@@ -58,9 +59,6 @@ virt-install \
   # virtiofs needs `virtiofsd` installed on the host and shared memory
   # backing (--memorybacking above). Near-native perf, handles big trees
   # with many small files (build outputs, node_modules, etc.).
-  # Inside the VM:
-  #   sudo mkdir -p /home/tim/work
-  #   sudo mount -t virtiofs $SHARE_TAG /home/tim/work
 
 echo
 echo "Defined and started libvirt domain '$NAME'."
