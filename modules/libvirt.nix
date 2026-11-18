@@ -7,6 +7,9 @@
     enable = true;
     # devvm/define.sh attaches a virtiofs share; libvirt rejects qemu's old bundled virtiofsd.
     qemu.vhostUserPackages = [ pkgs.virtiofsd ];
+    # Resolve VM names (libvirt domain name) to their DHCP lease, so
+    # `ssh devvm` works without looking up the IP.
+    nss.enableGuest = true;
   };
   programs.virt-manager.enable = true;
 

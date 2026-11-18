@@ -156,6 +156,9 @@
   networking.useDHCP = lib.mkForce false;
   networking.firewall.enable = true;
 
+  # mosh in from the host; also opens its UDP ports in the firewall.
+  programs.mosh.enable = true;
+
   # fonts
   fonts.packages = with pkgs; [ jetbrains-mono ];
 

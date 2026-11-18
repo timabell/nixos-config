@@ -183,9 +183,13 @@ See [security-boundaries.md](../security-boundaries.md) for why that's OK.
 The VM runs sshd. Paste-friendly terminal access:
 
 ```
-virsh domifaddr devvm           # find the IP
-ssh tim@<ip>
+ssh devvm
+mosh devvm
 ```
+
+On a NixOS host the libvirt NSS module (`modules/libvirt.nix`) resolves
+`devvm` to its current IP. Elsewhere, `virsh domifaddr devvm` to find it.
+`ssh-copy-id devvm` once to stop the password prompts.
 
 Useful when the SPICE clipboard is being flaky, or for running long
 commands from a host terminal where paste already works.
