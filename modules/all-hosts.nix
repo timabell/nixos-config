@@ -23,6 +23,7 @@
     fzf
     gh
     ghostty
+    git-cliff
     gitFull
     gitopolis
     gitui
