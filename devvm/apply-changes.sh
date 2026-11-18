@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Apply changes to devvm/install.sh (shares, memory, CPUs) to the existing VM.
+# Apply changes to devvm/define.sh (shares, memory, CPUs) to the existing VM.
 # libvirt only reads those at define time, so this shuts the VM down
 # cleanly, undefines it and redefines it. The qcow2 disk is never touched.
 # Changes to the VM's NixOS config are applied inside the VM instead.
@@ -31,5 +31,5 @@ if virsh domstate "$NAME" >/dev/null 2>&1; then
   virsh undefine "$NAME" --nvram
 fi
 
-echo "+ devvm/install.sh"
-devvm/install.sh
+echo "+ devvm/define.sh"
+devvm/define.sh

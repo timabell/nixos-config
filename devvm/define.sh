@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-# Define the devvm libvirt domain and start it.
-#
-# Run this on the host AFTER you've copied the qcow2 to libvirt's images
-# dir and resized it (see devvm/README.md). Idempotency is up to you:
-# `virt-install` will fail if the domain already exists — `virsh undefine
-# devvm --remove-all-storage` to start over.
+# Define the devvm libvirt domain and start it, using the disk that
+# devvm/create.sh put in place. Called by create.sh and apply-changes.sh;
+# fails if the domain already exists, so use apply-changes.sh to redefine.
 
 set -euo pipefail
 

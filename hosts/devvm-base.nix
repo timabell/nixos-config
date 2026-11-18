@@ -46,7 +46,7 @@
     settings.PasswordAuthentication = true;
   };
 
-  # virtiofs shares that devvm/install.sh attaches; device = its tag.
+  # virtiofs shares that devvm/define.sh attaches; device = its tag.
   # Here in the bare image so the first switch can use the host's checkout
   # at ~/repo/nixos-config. nofail keeps it bootable without the shares.
   fileSystems."/home/tim/work" = {

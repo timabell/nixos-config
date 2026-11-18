@@ -181,7 +181,7 @@ VM". The risk is binding too much:
 - Never mount anything containing host secrets.
 - Mount narrowly (one client / one project at a time).
 - The mount is configured per-VM-invocation, not baked into the
-  NixOS config. Already done — `devvm/install.sh` is where it lives.
+  NixOS config. Already done — `devvm/define.sh` is where it lives.
 
 **Current exception:** the host's whole `~/repo` is also shared,
 read-write, at `~/repo` in the VM. Accepted because it's all

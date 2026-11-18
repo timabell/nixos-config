@@ -59,8 +59,8 @@ fi
 echo "+ nix store delete $OUT"
 nix store delete "$OUT" || echo "warning: $OUT still referenced, not deleted"
 
-echo "+ devvm/install.sh"
-devvm/install.sh
+echo "+ devvm/define.sh"
+devvm/define.sh
 
 echo
 echo "Next, inside the VM:"
