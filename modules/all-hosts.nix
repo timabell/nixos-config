@@ -9,13 +9,16 @@
 {
   environment.systemPackages = with pkgs; [
     asciinema
+    btop
     bruno
     bubblewrap
+    chromium
     curl
     delta
     disk-hog-backup
     dos2unix
     emote
+    fastfetch
     file
     fzf
     gh
@@ -25,6 +28,7 @@
     gitui
     hashdeep
     htop
+    iotop
     jq
     kdiff3
     lazydocker
@@ -38,14 +42,19 @@
     loccount
     lychee
     markdownlint-cli2
+    meld
+    nethogs
     sqlite
     sqlitebrowser
     tig
+    tmux
     tree
+    vscode
     vim
     wget
     xclip
     zellij
+    zeal
     zola
     zsh
   ];

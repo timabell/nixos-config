@@ -43,7 +43,6 @@
     android-tools
     audacity
     cheese
-    chromium
     clamtk
     dia
     digikam
@@ -57,7 +56,6 @@
     keepassxc
     libreoffice
     maestral
-    meld
     obsidian
     obs-studio
     pdfarranger
@@ -69,8 +67,6 @@
     telegram-desktop
     vlc
     vokoscreen-ng
-    vscode
     x2goclient
-    zeal
   ];
 }

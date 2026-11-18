@@ -43,11 +43,7 @@
   environment.systemPackages = with pkgs; [
     pciutils # lspci
     usbutils # lsusb
-    btop
-    iotop
-    nethogs
     powertop
-    fastfetch
     smartmontools
     clamav
     v4l-utils

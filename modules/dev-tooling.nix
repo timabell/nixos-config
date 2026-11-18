@@ -24,7 +24,6 @@
     # IDEs
     jetbrains.rider
     jetbrains.webstorm
-    vscode
 
     # node + npm. Per-project versions via a flake.nix + direnv inside
     # individual repos.
@@ -58,10 +57,9 @@
     # Gas City prerequisites — https://github.com/gastownhall/gascity
     # (docs/getting-started/installation.md#prerequisites). VM-only:
     # Gas City and its agents run inside the VM. The remaining prereqs
-    # are already covered — jq and git come from modules/all-hosts.nix,
+    # are already covered — jq, git and tmux come from modules/all-hosts.nix,
     # gnumake is above, and flock ships in util-linux, which is in
     # NixOS's default system packages.
-    tmux
     dolt    # 1.86.2+ required; pinned to unstable via overlays/from-unstable.nix
     beads   # the `bd` CLI; unstable-only, see overlays/from-unstable.nix
     go      # source builds of Gas City (1.25+)
