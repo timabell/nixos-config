@@ -191,6 +191,20 @@ in
         fi
       '') spiceValues));
 
+  # Shutter rewrites ~/.shutter/settings.xml itself, so patch our keys in
+  # place, like the spice settings above. Skipped until Shutter has created
+  # the file. Image format isn't set here: Shutter stores it as a dropdown
+  # position that depends on the installed gdk-pixbuf loaders.
+  home.activation.shutterSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p "$HOME/tmp/shutter"
+    if [ -f "$HOME/.shutter/settings.xml" ]; then
+      run ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L \
+        -u '/opt/general/@folder' -v "$HOME/tmp/shutter" \
+        -u '/opt/general/@filename' -v 'shutter_%Y-%m-%d_%NN' \
+        "$HOME/.shutter/settings.xml"
+    fi
+  '';
+
   # Third-party applets go in ~/.local/share, not systemPackages, or their
   # Configure dialog won't open. See overlays/cinnamon-applets.nix.
   xdg.dataFile = lib.listToAttrs (map (uuid: {
