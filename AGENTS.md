@@ -15,7 +15,7 @@ only changed services):
 sudo nixos-rebuild switch --flake .#"$(hostname)"   # or: ./update-current-host.sh
 ```
 
-Rebuild the dev VM (run inside the VM): `./update.devvm.sh`
+Rebuild the dev VM (run inside the VM): `./update-current-host.sh`
 
 Update flake inputs (nixpkgs pins): `./update-pkg-cache.sh`
 
