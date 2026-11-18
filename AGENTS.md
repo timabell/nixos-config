@@ -47,7 +47,7 @@ store. Same flow for the VM (`devvm-base` image → boot → switch to `devvm`).
 `flake.nix` from one hardware definition (`hosts/<name>.nix`) plus:
 `disko/common.nix` (LUKS + btrfs) → `modules/bare-metal-hosts.nix` (the shared base) →
 home-manager (`home/tim.nix` + `home/cinnamon.nix`). `modules/bare-metal-hosts.nix`
-imports the base/user/all-hosts/containers/desktop/networking/hardware/sandbox
+imports the base/user/all-hosts/containers/libvirt/desktop/networking/hardware/sandbox
 modules. A per-host file carries *only* hardware specifics (kernel modules,
 swap, `stateVersion`). All hosts run a desktop — there are no headless servers,
 so desktop lives in the bare-metal base.

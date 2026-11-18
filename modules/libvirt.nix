@@ -1,0 +1,15 @@
+{ pkgs, ... }:
+
+# Host side of the dev VM (devvm/README.md). Bare metal only.
+
+{
+  virtualisation.libvirtd = {
+    enable = true;
+    # devvm/install.sh attaches a virtiofs share; libvirt rejects qemu's old bundled virtiofsd.
+    qemu.vhostUserPackages = [ pkgs.virtiofsd ];
+  };
+  programs.virt-manager.enable = true;
+
+  # virsh/virt-viewer as non-root otherwise talk to qemu:///session, where the devvm isn't.
+  environment.sessionVariables.LIBVIRT_DEFAULT_URI = "qemu:///system";
+}

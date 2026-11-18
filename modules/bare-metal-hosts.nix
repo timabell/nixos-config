@@ -11,6 +11,7 @@
     ./user.nix
     ./all-hosts.nix
     ./containers.nix
+    ./libvirt.nix
     # ./python.nix  # EXPERIMENT: can bare metal live without python? (the devvm keeps it)
     ./desktop.nix
     ./networking.nix
