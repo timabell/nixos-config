@@ -4,7 +4,7 @@
 #
 # Each file holds one overlay, with the reason for it in its header comment.
 
-{ nixpkgs-unstable, gitopolis, disk-hog-backup }:
+{ nixpkgs-unstable, gitopolis, disk-hog-backup, md5-tools, paths2html }:
 
 {
   # Not in nixpkgs.
@@ -13,6 +13,8 @@
   schemaExplorerOverlay = import ./schema-explorer.nix;
   beadsTuiOverlay = import ./beads-tui.nix;
   cinnamonAppletsOverlay = import ./cinnamon-applets.nix;
+  md5ToolsOverlay = import ./md5-tools.nix { inherit md5-tools; };
+  paths2htmlOverlay = import ./paths2html.nix { inherit paths2html; };
 
   # Patched builds.
   lazydockerProfilesOverlay = import ./lazydocker.nix;

@@ -30,14 +30,18 @@
     gitopolis.inputs.nixpkgs.follows = "nixpkgs";
     disk-hog-backup.url = "github:timabell/disk-hog-backup/nix";
     disk-hog-backup.inputs.nixpkgs.follows = "nixpkgs";
+    md5-tools.url = "github:timabell/md5-tools/nix";
+    md5-tools.inputs.nixpkgs.follows = "nixpkgs";
+    paths2html.url = "github:timabell/paths2html/nix";
+    paths2html.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, disko, nixos-hardware, home-manager, gitopolis, disk-hog-backup, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, disko, nixos-hardware, home-manager, gitopolis, disk-hog-backup, md5-tools, paths2html, ... }:
     let
-      overlays = import ./overlays { inherit nixpkgs-unstable gitopolis disk-hog-backup; };
+      overlays = import ./overlays { inherit nixpkgs-unstable gitopolis disk-hog-backup md5-tools paths2html; };
 
       devvmModules = [
-        { nixpkgs.overlays = with overlays; [ fromUnstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay beadsTuiOverlay schemaExplorerOverlay ]; }
+        { nixpkgs.overlays = with overlays; [ fromUnstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay beadsTuiOverlay schemaExplorerOverlay md5ToolsOverlay paths2htmlOverlay ]; }
         ./hosts/devvm.nix
         ./modules/all-hosts.nix
         ./modules/containers.nix
@@ -78,7 +82,7 @@
           };
         in {
           full = mk [
-            { nixpkgs.overlays = with overlays; [ fromUnstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay schemaExplorerOverlay cinnamonAppletsOverlay ]; }
+            { nixpkgs.overlays = with overlays; [ fromUnstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay schemaExplorerOverlay cinnamonAppletsOverlay md5ToolsOverlay paths2htmlOverlay ]; }
             ./modules/bare-metal-hosts.nix
             home-manager.nixosModules.home-manager
             {

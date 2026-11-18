@@ -35,6 +35,7 @@
     lazydocker
     neovim
     openssl
+    paths2html    # overlays/paths2html.nix
     pavucontrol
     pv
     ripgrep
@@ -43,6 +44,7 @@
     loccount
     lychee
     markdownlint-cli2
+    md5-tools     # `md5-diff` etc. (overlays/md5-tools.nix)
     meld
     nethogs
     sqlite

@@ -84,6 +84,27 @@
         "type": "github"
       }
     },
+    "md5-tools": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795042693,
+        "narHash": "sha256-WapSo4auknJ6GHMl3MiWVGkn+NwYHfv+RtJejUJdSso=",
+        "owner": "timabell",
+        "repo": "md5-tools",
+        "rev": "2f01c5167fd6fd32d09a87961705a75b810ee4a0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "timabell",
+        "ref": "nix",
+        "repo": "md5-tools",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "inputs": {
         "nixpkgs": "nixpkgs"
@@ -147,15 +168,38 @@
         "type": "github"
       }
     },
+    "paths2html": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795043777,
+        "narHash": "sha256-pgbsQ0p2PGxCVJu8DlQAxXTlKGc3AMqtQh7ID5Osvik=",
+        "owner": "timabell",
+        "repo": "paths2html",
+        "rev": "66ff6311bd2129a06c3839dff76bfc0a114d3bc6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "timabell",
+        "ref": "nix",
+        "repo": "paths2html",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "disk-hog-backup": "disk-hog-backup",
         "disko": "disko",
         "gitopolis": "gitopolis",
         "home-manager": "home-manager",
+        "md5-tools": "md5-tools",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "paths2html": "paths2html"
       }
     }
   },
