@@ -129,6 +129,12 @@
     fsType = "virtiofs";
     options = [ "nofail" ];
   };
+  # Host ~/repo, REPO_TAG in the host script.
+  fileSystems."/home/tim/repo" = {
+    device = "repo";
+    fsType = "virtiofs";
+    options = [ "nofail" ];
+  };
 
   # 8 GiB swapfile. The qcow2 ships swapless; npm installs of big
   # dep trees can blow past 16 GiB RAM and trigger OOM-kills, taking

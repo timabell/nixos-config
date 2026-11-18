@@ -18,6 +18,8 @@ VCPUS=4
 DISK=/var/lib/libvirt/images/devvm.qcow2
 SHARE_DIR=$HOME/no-sync/devvm   # host dir, auto-mounted in the VM at /home/tim/work (hosts/devvm.nix)
 SHARE_TAG=work
+REPO_DIR=$HOME/repo   # host dir, auto-mounted in the VM at /home/tim/repo; RW, see security-boundaries.md
+REPO_TAG=repo
 # ----------------------------------
 
 if [[ ! -f $DISK ]]; then
@@ -27,6 +29,8 @@ fi
 
 echo "+ mkdir -p $SHARE_DIR"
 mkdir -p "$SHARE_DIR"
+echo "+ mkdir -p $REPO_DIR"
+mkdir -p "$REPO_DIR"
 
 virt-install \
   --name "$NAME" \
@@ -41,6 +45,7 @@ virt-install \
   --video virtio \
   --memorybacking source.type=memfd,access.mode=shared \
   --filesystem "driver.type=virtiofs,source=$SHARE_DIR,target=$SHARE_TAG" \
+  --filesystem "driver.type=virtiofs,source=$REPO_DIR,target=$REPO_TAG" \
   --import \
   --noautoconsole
   # UEFI Secure Boot is disabled because NixOS systemd-boot isn't signed

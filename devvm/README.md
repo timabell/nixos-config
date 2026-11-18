@@ -9,7 +9,7 @@ See also the more granular [bubblewrap sandbox](https://github.com/timabell/sand
 - XFCE desktop (lightweight)
 - JetBrains Toolbox, VS Code, the dev tools from `modules/dev-tooling.nix`
 - SPICE: bidirectional clipboard, display auto-resize
-- virtiofs share from host (`~/no-sync/devvm` → `~/work` in the VM)
+- virtiofs shares from host (`~/no-sync/devvm` → `~/work`, `~/repo` → `~/repo` in the VM)
 - No GPG keys in the VM. Signing is host-only.
 - Outbound-only firewall
 
@@ -169,6 +169,9 @@ Two patterns:
 - **Clone on the host into `~/no-sync/devvm/<repo>/`.** Same end state.
   Useful when you've already got the repo somewhere on the host.
 
+The host's `~/repo/` is also mounted, read-write, at `/home/tim/repo/`.
+See [security-boundaries.md](../security-boundaries.md) for why that's OK.
+
 ### SSH from host
 
 The VM runs sshd. Paste-friendly terminal access:
@@ -308,9 +311,9 @@ You can also bake a new default into the build by editing
 `virtualisation.diskSize` in `hosts/devvm-base.nix` — only matters for fresh
 qcow2 builds, doesn't affect an already-deployed VM.
 
-## Changing the shared folder
+## Changing the shared folders
 
-The host folder is `SHARE_DIR` in `devvm/install.sh`. The share is
+The host folders are `SHARE_DIR` and `REPO_DIR` in `devvm/install.sh`. Shares are
 attached when the domain is defined, so after changing it run
 `devvm/delete.sh` then `devvm/install.sh` (the disk is kept).
 
