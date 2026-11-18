@@ -6,6 +6,9 @@
 
 set -euo pipefail
 
+# Non-root defaults to qemu:///session, which runs as you and can't read the system images dir.
+export LIBVIRT_DEFAULT_URI=qemu:///system
+
 NAME=devvm
 DISK=/var/lib/libvirt/images/devvm.qcow2
 
