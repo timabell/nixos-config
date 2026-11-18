@@ -108,8 +108,8 @@ Memory, CPU count and disk path are variables at the top of
 Open the console with `virt-viewer devvm`, or find `devvm` in
 virt-manager.
 
-To recreate the domain (e.g. after editing `install.sh`), run
-`devvm/delete.sh` then `devvm/install.sh`. For a fresh disk too, run
+After editing `install.sh`, run `devvm/apply-changes.sh` (keeps the
+disk). For a fresh disk, run
 `devvm/delete.sh --disk` then `devvm/build.sh`.
 
 ### First boot of the bare image
@@ -314,8 +314,8 @@ qcow2 builds, doesn't affect an already-deployed VM.
 ## Changing the shared folders
 
 The host folders are `SHARE_DIR` and `REPO_DIR` in `devvm/install.sh`. Shares are
-attached when the domain is defined, so after changing it run
-`devvm/delete.sh` then `devvm/install.sh` (the disk is kept).
+attached when the domain is defined, so run `devvm/apply-changes.sh`
+after changing them.
 
 ## Troubleshooting
 
