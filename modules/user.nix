@@ -8,7 +8,7 @@
   users.users.tim = {
     isNormalUser = true;
     description = "tim";
-    extraGroups = [ "wheel" "networkmanager" "audio" "docker" ];
+    extraGroups = [ "wheel" "networkmanager" "audio" "docker" "libvirtd" ];
     shell = pkgs.zsh;
     initialPassword = "changeme";
   };

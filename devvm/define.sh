@@ -1,28 +1,33 @@
 #!/usr/bin/env bash
-# Define the devvm libvirt domain and start it.
-#
-# Run this on the host AFTER you've copied the qcow2 to libvirt's images
-# dir and resized it (see dev-vm.md steps 4–5). Idempotency is up to you:
-# `virt-install` will fail if the domain already exists — `virsh undefine
-# devvm --remove-all-storage` to start over.
+# Define the devvm libvirt domain and start it, using the disk that
+# devvm/create.sh put in place. Called by create.sh and apply-changes.sh;
+# fails if the domain already exists, so use apply-changes.sh to redefine.
 
 set -euo pipefail
+
+# Non-root defaults to qemu:///session, which runs as you and can't read the system images dir.
+export LIBVIRT_DEFAULT_URI=qemu:///system
 
 # --- adjust these for your host ---
 NAME=devvm
 MEMORY_MIB=8192
 VCPUS=4
 DISK=/var/lib/libvirt/images/devvm.qcow2
-SHARE_DIR=$HOME/no-sync/devvm   # host dir, mounted in the VM as /home/tim/work via 9p
+SHARE_DIR=$HOME/no-sync/devvm   # host dir, auto-mounted in the VM at /home/tim/work (hosts/devvm.nix)
 SHARE_TAG=work
+REPO_DIR=$HOME/repo   # host dir, auto-mounted in the VM at /home/tim/repo; RW, see security-boundaries.md
+REPO_TAG=repo
 # ----------------------------------
 
 if [[ ! -f $DISK ]]; then
-  echo "error: $DISK not found. Build and copy the qcow2 first (see dev-vm.md)." >&2
+  echo "error: $DISK not found. Build and copy the qcow2 first (see devvm/README.md)." >&2
   exit 1
 fi
 
+echo "+ mkdir -p $SHARE_DIR"
 mkdir -p "$SHARE_DIR"
+echo "+ mkdir -p $REPO_DIR"
+mkdir -p "$REPO_DIR"
 
 virt-install \
   --name "$NAME" \
@@ -37,6 +42,7 @@ virt-install \
   --video virtio \
   --memorybacking source.type=memfd,access.mode=shared \
   --filesystem "driver.type=virtiofs,source=$SHARE_DIR,target=$SHARE_TAG" \
+  --filesystem "driver.type=virtiofs,source=$REPO_DIR,target=$REPO_TAG" \
   --import \
   --noautoconsole
   # UEFI Secure Boot is disabled because NixOS systemd-boot isn't signed
@@ -55,9 +61,6 @@ virt-install \
   # virtiofs needs `virtiofsd` installed on the host and shared memory
   # backing (--memorybacking above). Near-native perf, handles big trees
   # with many small files (build outputs, node_modules, etc.).
-  # Inside the VM:
-  #   sudo mkdir -p /home/tim/work
-  #   sudo mount -t virtiofs $SHARE_TAG /home/tim/work
 
 echo
 echo "Defined and started libvirt domain '$NAME'."

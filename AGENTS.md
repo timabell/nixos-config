@@ -15,7 +15,7 @@ only changed services):
 sudo nixos-rebuild switch --flake .#"$(hostname)"   # or: ./update-current-host.sh
 ```
 
-Rebuild the dev VM (run inside the VM): `./update.devvm.sh`
+Rebuild the dev VM (run inside the VM): `./update-current-host.sh`
 
 Update flake inputs (nixpkgs pins): `./update-pkg-cache.sh`
 
@@ -47,7 +47,7 @@ store. Same flow for the VM (`devvm-base` image → boot → switch to `devvm`).
 `flake.nix` from one hardware definition (`hosts/<name>.nix`) plus:
 `disko/common.nix` (LUKS + btrfs) → `modules/bare-metal-hosts.nix` (the shared base) →
 home-manager (`home/tim.nix` + `home/cinnamon.nix`). `modules/bare-metal-hosts.nix`
-imports the base/user/all-hosts/containers/desktop/networking/hardware/sandbox
+imports the base/user/all-hosts/containers/libvirt/desktop/networking/hardware/sandbox
 modules. A per-host file carries *only* hardware specifics (kernel modules,
 swap, `stateVersion`). All hosts run a desktop — there are no headless servers,
 so desktop lives in the bare-metal base.
@@ -59,7 +59,7 @@ development builds run on bare-metal hosts** (supply-chain risk). Bare-metal
 hosts share `modules/all-hosts.nix` and Docker (`modules/containers.nix`) with
 the VM, but get no language toolchains. The VM has its own XFCE desktop in
 `hosts/devvm.nix` and doesn't import `modules/desktop.nix`. See
-`security-boundaries.md` for the full threat model, and `dev-vm.md` for VM
+`security-boundaries.md` for the full threat model, and `devvm/README.md` for VM
 setup/operation.
 
 **The `sandbox` command** (`modules/sandbox/`, vendored from

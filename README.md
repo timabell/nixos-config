@@ -5,7 +5,7 @@ https://github.com/timabell/nixos-config
 Flake-based NixOS configuration with disko for declarative disk partitioning,
 LUKS encryption, and btrfs.
 
-Also available as a variation for an [isolated development vm](dev-vm.md) to mitigate supply-chain attacks on the primary host.
+Also available as a variation for an [isolated development vm](devvm/README.md) to mitigate supply-chain attacks on the primary host.
 
 See [security-boundaries.md](security-boundaries.md) for the threat model and
 host / VM / bubblewrap layering this is built around.
@@ -24,7 +24,7 @@ Reusing this config? The default user is defined in one place —
 
 ### Development is sandboxed in the dev VM
 
-All development work happens in the [dev VM](dev-vm.md), never on a
+All development work happens in the [dev VM](devvm/README.md), never on a
 bare-metal host — no npm/dotnet/cargo builds on the primary machines
 (supply-chain risk). The dev toolchain lives in `modules/dev-tooling.nix`
 and is imported only by the VM. Bare-metal hosts get shared tooling

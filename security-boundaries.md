@@ -181,7 +181,13 @@ VM". The risk is binding too much:
 - Never mount anything containing host secrets.
 - Mount narrowly (one client / one project at a time).
 - The mount is configured per-VM-invocation, not baked into the
-  NixOS config. Already done — `dev-vm-install.sh` is where it lives.
+  NixOS config. Already done — `devvm/define.sh` is where it lives.
+
+**Current exception:** the host's whole `~/repo` is also shared,
+read-write, at `~/repo` in the VM. Accepted because it's all
+source-controlled code with no secrets (no `.env` files), the VM can't
+push, and changes show up in `git status` / review before anything is
+committed or rebuilt on the host.
 
 **Open:** whether the share should be read-only by default. Convenient
 to have writes back to the host (committing from host etc.), but it
@@ -356,7 +362,7 @@ Practical notes:
 
 - **No GPG keys in the VM.** Done.
 - **No long-lived SSH keys in the VM.** Pending verification — add a
-  note to `dev-vm.md`.
+  note to `devvm/README.md`.
 - **Never forward host SSH/GPG agent into the VM.**
 - **virtiofs share is opt-in and narrow.** Done.
 - **VM firewall default-deny inbound.** Should already be true via

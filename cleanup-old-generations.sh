@@ -5,9 +5,7 @@
 
 set -euo pipefail
 
-echo "==> Store size before"
-echo "+ du -sh /nix/store"
-du -sh /nix/store
+df -h /nix
 
 echo "==> Deleting system generations older than 90 days, then collecting garbage"
 echo "+ sudo nix-collect-garbage --delete-older-than 90d"
@@ -21,6 +19,4 @@ echo "==> Rewriting boot menu entries so deleted generations disappear"
 echo "+ sudo nixos-rebuild boot --flake .#$(hostname)"
 sudo nixos-rebuild boot --flake .#"$(hostname)"
 
-echo "==> Store size after"
-echo "+ du -sh /nix/store"
-du -sh /nix/store
+df -h /nix
