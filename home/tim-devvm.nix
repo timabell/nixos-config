@@ -34,6 +34,8 @@
     };
   };
 
+  home.sessionVariables.DOTNET_CLI_TELEMETRY_OPTOUT = "1";
+
   # Re-evaluate DOTNET_ROOT on every cd so dotnet-tools find
   # whichever .NET version mise has provisioned for the project.
   programs.zsh.initContent = lib.mkAfter ''
