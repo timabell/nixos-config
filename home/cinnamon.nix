@@ -166,8 +166,9 @@ in
 
     # Makes every Cinnamon "suspend" (lid, power button, menu) call logind's
     # suspend-then-hibernate, which hibernates after HibernateDelaySec (36h). Only
-    # on hosts with hibernate set up (boot.resumeDevice), currently cog.
-    "org/cinnamon/SessionManager" = lib.mkIf (osConfig.boot.resumeDevice != "") {
+    # on hosts with hibernate set up (boot.resumeDevice), currently cog. Schema is
+    # org.cinnamon.SessionManager but its dconf path is /org/cinnamon/cinnamon-session/.
+    "org/cinnamon/cinnamon-session" = lib.mkIf (osConfig.boot.resumeDevice != "") {
       suspend-then-hibernate = true;
     };
   };
