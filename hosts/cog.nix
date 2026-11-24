@@ -30,6 +30,17 @@
   boot.kernelParams = [ "resume_offset=194258176" ];
   systemd.sleep.settings.Sleep.HibernateDelaySec = "36h"; # hibernating costs a LUKS unlock; 36h so close-at-9am, open-at-10am-next-day stays a plain resume
 
+  # No wake from keyboard/touchpad: keys pressed by the closing lid or in a bag can
+  # wake it. Lid open and power button still wake. All Framework USB
+  # modules, so swapped keyboard/numpad modules are covered too.
+  services.udev.extraRules = let
+    frameworkUsbVendor = "32ac";
+    touchpadI2cDevice = "i2c-PIXA3854:00"; # PixArt touchpad, named from its firmware (ACPI) id
+  in ''
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="${frameworkUsbVendor}", ATTR{power/wakeup}="disabled"
+    ACTION=="add", SUBSYSTEM=="i2c", KERNEL=="${touchpadI2cDevice}", ATTR{power/wakeup}="disabled"
+  '';
+
   # First install on 25.05; never change this for an existing machine.
   system.stateVersion = "25.05";
 }
