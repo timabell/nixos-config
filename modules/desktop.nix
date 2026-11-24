@@ -37,7 +37,12 @@
       "vscode"
     ];
 
-  programs.thunderbird.enable = true;
+  programs.thunderbird = {
+    enable = true;
+    # Defaults are set declaratively in home/cinnamon.nix; stop the
+    # "System settings" nag dialog asking to take over newsgroups/feeds/etc.
+    preferences."mail.shell.checkDefaultClient" = false;
+  };
 
   environment.systemPackages = with pkgs; [
     android-tools
