@@ -141,12 +141,12 @@ in
     };
     "org/cinnamon/desktop/keybindings/media-keys" = {
       screensaver = [ "<Super>l" "XF86ScreenSaver" ];
-      # Free Print for the shutter binding below.
+      # Free Print for the ksnip binding below.
       screenshot = lib.hm.gvariant.mkEmptyArray lib.hm.gvariant.type.string;
     };
     "org/cinnamon/desktop/keybindings/custom-keybindings/custom0" = {
-      name = "Shutter select";
-      command = "shutter --select";
+      name = "ksnip rectangle";
+      command = "ksnip --rectarea";
       binding = [ "Print" ];
     };
 
@@ -192,23 +192,12 @@ in
         fi
       '') spiceValues));
 
-  # Shutter saves by writing a temp file and mv-ing it over settings.xml,
-  # which replaces this symlink with a plain file (hence force). GUI
-  # changes last until the next switch. filetype is a dropdown index (order
-  # from the gdk-pixbuf loaders); currently bmp/png/jpg, so 1 = png.
-  # last_profile=-1 so no profile overrides it at startup.
-  # The plugins list is Shutter's cache; without it (or if app_version
-  # doesn't match the installed Shutter) it rescans plugins on every start.
-  home.file.".shutter/settings.xml" = {
-    force = true;
-    source = pkgs.writeText "shutter-settings.xml"
-      (builtins.replaceStrings [ "@home@" "@shutter@" ] [ config.home.homeDirectory "${pkgs.shutter}" ]
-        (builtins.readFile ../dotfiles/shutter/settings.xml));
-  };
-
-  # Shutter's save folder.
-  home.activation.shutterSaveDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    run mkdir -p "$HOME/tmp/shutter"
+  # Set just ksnip's save folder; it owns the rest of ksnip.conf. Qt merges
+  # on save, so this survives ksnip writing the file.
+  home.activation.ksnipSaveDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p "$HOME/tmp/ksnip" "$HOME/.config/ksnip"
+    run ${pkgs.crudini}/bin/crudini --set "$HOME/.config/ksnip/ksnip.conf" \
+      Application SaveDirectory "$HOME/tmp/ksnip"
   '';
 
   # Third-party applets go in ~/.local/share, not systemPackages, or their

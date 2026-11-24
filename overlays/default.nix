@@ -18,7 +18,6 @@
 
   # Patched builds.
   lazydockerProfilesOverlay = import ./lazydocker.nix;
-  shutterOverlay = import ./shutter.nix;
 
   # Newer versions from nixpkgs-unstable.
   fromUnstableOverlay = import ./from-unstable.nix { inherit nixpkgs-unstable; };

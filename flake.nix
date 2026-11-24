@@ -82,7 +82,7 @@
           };
         in {
           full = mk [
-            { nixpkgs.overlays = with overlays; [ fromUnstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay schemaExplorerOverlay cinnamonAppletsOverlay md5ToolsOverlay paths2htmlOverlay shutterOverlay ]; }
+            { nixpkgs.overlays = with overlays; [ fromUnstableOverlay gitopolisOverlay diskHogBackupOverlay lazydockerProfilesOverlay schemaExplorerOverlay cinnamonAppletsOverlay md5ToolsOverlay paths2htmlOverlay ]; }
             ./modules/bare-metal-hosts.nix
             home-manager.nixosModules.home-manager
             {

@@ -59,6 +59,7 @@
     kdePackages.okular
     kdePackages.kdenlive
     keepassxc
+    ksnip
     libreoffice
     maestral
     obsidian
@@ -66,7 +67,6 @@
     pdfarranger
     remmina
     screenkey
-    shutter
     signal-desktop
     slack
     telegram-desktop
