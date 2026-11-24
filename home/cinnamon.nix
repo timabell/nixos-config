@@ -223,6 +223,8 @@ in
       "x-scheme-handler/about" = "firefox.desktop";
       "x-scheme-handler/unknown" = "firefox.desktop";
       "x-scheme-handler/mailto" = "thunderbird.desktop";
+      "x-scheme-handler/mid" = "thunderbird.desktop";
+      "message/rfc822" = "thunderbird.desktop";
 
       # telegram URL schemes
       "x-scheme-handler/tg" = "org.telegram.desktop.desktop";
