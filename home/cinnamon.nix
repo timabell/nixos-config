@@ -197,10 +197,12 @@ in
   # changes last until the next switch. filetype is a dropdown index (order
   # from the gdk-pixbuf loaders); currently bmp/png/jpg, so 1 = png.
   # last_profile=-1 so no profile overrides it at startup.
+  # The plugins list is Shutter's cache; without it (or if app_version
+  # doesn't match the installed Shutter) it rescans plugins on every start.
   home.file.".shutter/settings.xml" = {
     force = true;
     source = pkgs.writeText "shutter-settings.xml"
-      (builtins.replaceStrings [ "@home@" ] [ config.home.homeDirectory ]
+      (builtins.replaceStrings [ "@home@" "@shutter@" ] [ config.home.homeDirectory "${pkgs.shutter}" ]
         (builtins.readFile ../dotfiles/shutter/settings.xml));
   };
 
