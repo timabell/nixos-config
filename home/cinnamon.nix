@@ -192,27 +192,21 @@ in
         fi
       '') spiceValues));
 
-  # Shutter rewrites ~/.shutter/settings.xml itself, so patch our keys in
-  # place, like the spice settings above. Skipped until Shutter has created
-  # the file. Image format is stored as a dropdown index (order comes from
-  # the gdk-pixbuf loaders); currently bmp/png/jpg, so 1 = png.
-  # A running Shutter saves its in-memory settings on quit (SIGTERM too),
-  # clobbering our edit, so stop it and wait for that save first.
-  home.activation.shutterSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  # Shutter saves by writing a temp file and mv-ing it over settings.xml,
+  # which replaces this symlink with a plain file (hence force). GUI
+  # changes last until the next switch. filetype is a dropdown index (order
+  # from the gdk-pixbuf loaders); currently bmp/png/jpg, so 1 = png.
+  # last_profile=-1 so no profile overrides it at startup.
+  home.file.".shutter/settings.xml" = {
+    force = true;
+    source = pkgs.writeText "shutter-settings.xml"
+      (builtins.replaceStrings [ "@home@" ] [ config.home.homeDirectory ]
+        (builtins.readFile ../dotfiles/shutter/settings.xml));
+  };
+
+  # Shutter's save folder.
+  home.activation.shutterSaveDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run mkdir -p "$HOME/tmp/shutter"
-    if run ${pkgs.procps}/bin/pkill -u "$(id -u)" -f 'bin/\.shutter-wrapped'; then
-      for _ in $(seq 100); do
-        ${pkgs.procps}/bin/pgrep -u "$(id -u)" -f 'bin/\.shutter-wrapped' >/dev/null || break
-        sleep 0.1
-      done
-    fi
-    if [ -f "$HOME/.shutter/settings.xml" ]; then
-      run ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L \
-        -u '/opt/general/@folder' -v "$HOME/tmp/shutter" \
-        -u '/opt/general/@filename' -v 'shutter_%Y-%m-%d_%NN' \
-        -u '/opt/general/@filetype' -v 1 \
-        "$HOME/.shutter/settings.xml"
-    fi
   '';
 
   # Third-party applets go in ~/.local/share, not systemPackages, or their
