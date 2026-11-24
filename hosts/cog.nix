@@ -37,7 +37,7 @@
     frameworkUsbVendor = "32ac";
     touchpadI2cDevice = "i2c-PIXA3854:00"; # PixArt touchpad, named from its firmware (ACPI) id
   in ''
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="${frameworkUsbVendor}", ATTR{power/wakeup}="disabled"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="${frameworkUsbVendor}", TEST=="power/wakeup", ATTR{power/wakeup}="disabled"
     ACTION=="add", SUBSYSTEM=="i2c", KERNEL=="${touchpadI2cDevice}", ATTR{power/wakeup}="disabled"
   '';
 
