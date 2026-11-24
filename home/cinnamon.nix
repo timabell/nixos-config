@@ -194,14 +194,23 @@ in
 
   # Shutter rewrites ~/.shutter/settings.xml itself, so patch our keys in
   # place, like the spice settings above. Skipped until Shutter has created
-  # the file. Image format isn't set here: Shutter stores it as a dropdown
-  # position that depends on the installed gdk-pixbuf loaders.
+  # the file. Image format is stored as a dropdown index (order comes from
+  # the gdk-pixbuf loaders); currently bmp/png/jpg, so 1 = png.
+  # A running Shutter saves its in-memory settings on quit (SIGTERM too),
+  # clobbering our edit, so stop it and wait for that save first.
   home.activation.shutterSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run mkdir -p "$HOME/tmp/shutter"
+    if run ${pkgs.procps}/bin/pkill -u "$(id -u)" -f 'bin/\.shutter-wrapped'; then
+      for _ in $(seq 100); do
+        ${pkgs.procps}/bin/pgrep -u "$(id -u)" -f 'bin/\.shutter-wrapped' >/dev/null || break
+        sleep 0.1
+      done
+    fi
     if [ -f "$HOME/.shutter/settings.xml" ]; then
       run ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L \
         -u '/opt/general/@folder' -v "$HOME/tmp/shutter" \
         -u '/opt/general/@filename' -v 'shutter_%Y-%m-%d_%NN' \
+        -u '/opt/general/@filetype' -v 1 \
         "$HOME/.shutter/settings.xml"
     fi
   '';
