@@ -273,6 +273,8 @@ in
       "application/x-shellscript" = "code.desktop";
       "application/xml" = "code.desktop";
       "text/css" = "code.desktop";
+      "text/html" = "code.desktop";
+      "application/xhtml+xml" = "code.desktop";
       "text/turtle" = "code.desktop";
       "text/x-c++hdr" = "code.desktop";
       "text/x-c++src" = "code.desktop";
