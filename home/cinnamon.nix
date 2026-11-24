@@ -159,9 +159,9 @@ in
       lid-close-ac-action = "suspend";
       lid-close-battery-action = "suspend";
       sleep-display-ac = 1800;
-      sleep-display-battery = 1800;
+      sleep-display-battery = 600;
       sleep-inactive-ac-timeout = 0;
-      sleep-inactive-battery-timeout = 0;
+      sleep-inactive-battery-timeout = 1200; # catches a lid close that never registered (found hot in bag)
     };
 
     # Makes every Cinnamon "suspend" (lid, power button, menu) call logind's
