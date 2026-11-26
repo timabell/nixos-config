@@ -49,11 +49,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777592675,
-        "narHash": "sha256-elN9CKl+sCJK7uub7+o+qhbQw+GM3Wr7Cu1m7HRkkjA=",
+        "lastModified": 1795653951,
+        "narHash": "sha256-HFRItDzkoysKC7XAXRI3Vl8SqboZJzmXXnD6BqxG8vA=",
         "owner": "timabell",
         "repo": "gitopolis",
-        "rev": "3242416ddd356cfce1ead7ecc83120e772a3f88d",
+        "rev": "d8469a7452d4ede5c5d7fdcc830382d2853e6983",
         "type": "github"
       },
       "original": {
