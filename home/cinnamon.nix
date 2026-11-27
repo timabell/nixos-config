@@ -133,6 +133,12 @@ in
       notification-enabled = false;
     };
 
+    # No volume/player controls or album art on the lock screen.
+    "org/cinnamon/desktop/screensaver" = {
+      allow-media-control = false;
+      show-album-art = false;
+    };
+
     # Swap Cinnamon's defaults: Super+L locks (Windows habit), Ctrl+Alt+L
     # opens Looking Glass.
     "org/cinnamon/desktop/keybindings" = {
