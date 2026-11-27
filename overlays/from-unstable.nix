@@ -32,3 +32,10 @@ prev.lib.genAttrs [
   # ripgrep-universal fix. Drop once stable gets it.
   "vscode"
 ] (name: unstable.${name})
+// {
+  # Nested, so not in the list above. Stable flags 2026.2.4 insecure
+  # (CVE-2026-111497) and refuses to evaluate it; unstable's same version
+  # isn't flagged. Drop once stable clears it.
+  # https://github.com/NixOS/nixpkgs/issues/590447
+  jetbrains = prev.jetbrains // { inherit (unstable.jetbrains) rider; };
+}
