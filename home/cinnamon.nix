@@ -198,6 +198,30 @@ in
         fi
       '') spiceValues));
 
+  # Cinnamon has no mute-on-lock setting. cinnamon-screensaver emits
+  # ActiveChanged(true) when the lock screen comes up (incl. lock-on-suspend),
+  # so mute the default sink then. Not unmuted on unlock, deliberately.
+  systemd.user.services.mute-on-lock = {
+    Unit.Description = "Mute audio when the Cinnamon screen locks";
+    Service = {
+      ExecStart = lib.getExe (pkgs.writeShellApplication {
+        name = "mute-on-lock";
+        runtimeInputs = [ pkgs.dbus pkgs.wireplumber ];
+        text = ''
+          dbus-monitor --session \
+            "type='signal',interface='org.cinnamon.ScreenSaver',member='ActiveChanged'" |
+            while read -r line; do
+              case "$line" in
+                *"boolean true"*) wpctl set-mute @DEFAULT_AUDIO_SINK@ 1 ;;
+              esac
+            done
+        '';
+      });
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
+
   # Set just ksnip's save folder; it owns the rest of ksnip.conf. Qt merges
   # on save, so this survives ksnip writing the file.
   home.activation.ksnipSaveDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
